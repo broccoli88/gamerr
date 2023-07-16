@@ -1,0 +1,22 @@
+{
+	"navMobile": [
+		{ "name": "reviews", "link": "#" },
+		{ "name": "collections", "link": "#" },
+		{ "name": "platforms", "link": "#" },
+		{ "name": "stores", "link": "#" },
+		{ "name": "genres", "link": "#" },
+		{ "name": "creators", "link": "#" },
+		{ "name": "tags", "link": "#" },
+		{ "name": "developers", "link": "#" },
+		{ "name": "publishers", "link": "#" }
+	],
+
+	"userLinks": [
+		{ "name": "leaderboard", "link": "#" },
+		{ "name": "discord", "link": "#" },
+		{ "name": "@rawgtheworld", "link": "#" },
+		{ "name": "@rawgthepictures", "link": "#" },
+		{ "name": "get an API key", "link": "#" },
+		{ "name": "sitemap", "link": "#" }
+	]
+}

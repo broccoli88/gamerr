@@ -1,0 +1,45 @@
+{
+	"orderBy": [
+		{ "name": "relevance", "selected": false },
+		{ "name": "date added", "selected": false },
+		{ "name": "name", "selected": false },
+		{ "name": "release date", "selected": false },
+		{ "name": "popularity", "selected": false },
+		{ "name": "average rating", "selected": false }
+	],
+
+	"platforms": [
+		{ "name": "PC", "selected": false },
+		{
+			"name": "PlayStation",
+			"selected": false,
+			"type": [
+				{ "name": "PlayStation", "selected": false },
+				{ "name": "PlayStation 4", "selected": false },
+				{ "name": "PlayStation 5", "selected": false }
+			]
+		},
+		{
+			"name": "Xbox",
+			"selected": false,
+			"type": [
+				{ "name": "Xbox One", "selected": false },
+				{ "name": "Xbox Series S/X", "selected": false }
+			]
+		},
+		{ "name": "iOS", "selected": false },
+		{ "name": "Android", "selected": false },
+		{ "name": "Apple Macintosh", "selected": false },
+		{ "name": "Linux", "selected": false },
+		{
+			"name": "Nintendo",
+			"selected": false,
+			"type": [
+				{ "name": "Nintendo Switch", "selected": false },
+				{ "name": "NES", "selected": false }
+			]
+		},
+		{ "name": "SEGA", "selected": false },
+		{ "name": "Web", "selected": false }
+	]
+}

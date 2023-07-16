@@ -1,0 +1,152 @@
+{
+	"home": {
+		"title": "Home",
+		"link": "#"
+	},
+
+	"reviews": {
+		"title": "Reviews",
+		"link": "#"
+	},
+
+	"newReleases": {
+		"title": "New Releases",
+		"link": "#",
+		"types": [
+			{ "title": "Last 30 days", "icon": "ph:star-fill", "link": "#" },
+			{
+				"title": "This week",
+				"icon": "simple-icons:fireship",
+				"link": "#"
+			},
+			{ "title": "Next week", "icon": "prime:fast-forward", "link": "#" },
+			{
+				"title": "Release calendar",
+				"icon": "ion:calendar-number-outline",
+				"link": "#"
+			}
+		]
+	},
+	"top": {
+		"title": "Top",
+		"link": "#",
+		"types": [
+			{
+				"title": "Best of the year",
+				"icon": "bi:trophy-fill",
+				"link": "#"
+			},
+			{
+				"title": "Popular in 2022",
+				"icon": "ri:bar-chart-2-fill",
+				"link": "#"
+			},
+			{
+				"title": "All time top 250",
+				"icon": "mdi:crown-outline",
+				"link": "#"
+			}
+		]
+	},
+
+	"allGames": {
+		"title": "All Games",
+		"link": "#"
+	},
+
+	"browse": {
+		"title": "Browse",
+		"link": "#",
+		"types": [
+			{
+				"title": "Platforms",
+				"icon": "solar:gamepad-minimalistic-bold",
+				"link": "#"
+			},
+			{ "title": "Stores", "icon": "fe:download", "link": "#" },
+			{
+				"title": "Collections",
+				"icon": "material-symbols:folder-open-sharp",
+				"link": "#"
+			},
+			{ "title": "Reviews", "icon": "bxs:message-rounded", "link": "#" },
+			{ "title": "Genres", "icon": "mdi:ghost", "link": "#" },
+			{ "title": "Creators", "icon": "ic:baseline-person", "link": "#" },
+			{ "title": "Tags", "icon": "charm:hash", "link": "#" },
+			{ "title": "Developers", "icon": "ph:code-bold", "link": "#" },
+			{
+				"title": "Publishers",
+				"icon": "streamline:interface-content-book-page-pages-content-books-book-open",
+				"link": "#"
+			}
+		]
+	},
+
+	"platforms": {
+		"title": "Platforms",
+		"link": "#",
+		"types": [
+			{ "title": "PC", "icon": "cib:windows", "link": "#" },
+			{
+				"title": "PlayStation",
+				"icon": "ion:logo-playstation",
+				"link": "#"
+			},
+			{ "title": "Xbox One", "icon": "ion:xbox", "link": "#" },
+			{
+				"title": "Nintendo Switch",
+				"icon": "simple-icons:nintendo",
+				"link": "#"
+			},
+			{ "title": "iOS", "icon": "ic:outline-phone-iphone", "link": "#" },
+			{ "title": "Android", "icon": "bi:android2", "link": "#" }
+		]
+	},
+
+	"genres": {
+		"title": "Genres",
+		"link": "#",
+		"types": [
+			{
+				"title": "Action",
+				"img": "/icons/action.png",
+				"link": "#"
+			},
+			{
+				"title": "Strategy",
+				"img": "/icons/strategy.png",
+				"link": "#"
+			},
+			{
+				"title": "RPG",
+				"img": "/icons/rpg.png",
+				"link": "#"
+			},
+			{
+				"title": "Shooter",
+				"img": "/icons/shooter.png",
+				"link": "#"
+			},
+			{
+				"title": "Adventure",
+				"img": "/icons/adventure.png",
+				"link": "#"
+			},
+			{
+				"title": "Puzzle",
+				"img": "/icons/puzzle.png",
+				"link": "#"
+			},
+			{
+				"title": "Racing",
+				"img": "/icons/racing.png",
+				"link": "#"
+			},
+			{
+				"title": "Sports",
+				"img": "/icons/sports.png",
+				"link": "#"
+			}
+		]
+	}
+}

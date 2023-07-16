@@ -1,0 +1,50 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 10px;
+}
+
+body {
+    background-color: $color-bg;
+}
+
+#app {
+    min-height: 100vh;
+    width: 100%;
+    max-width: 190rem;
+    margin-inline: auto;
+
+    font-family: $ff-text;
+    font-size: 1.6rem;
+    font-weight: 300;
+    line-height: 1.45;
+    letter-spacing: 0.5px;
+    color: $color-text;
+}
+
+h1 {
+    font-size: clamp(3.5rem, 1rem + 4vw, 8rem);
+    line-height: 1.2;
+}
+
+h2 {
+    font-size: clamp(2.6rem, 1rem + 3.5vw, 5.25rem);
+}
+
+h3 {
+    font-size: clamp(1.8rem, 1rem + 1.8vw, 3.5rem);
+}
+
+a {
+    text-decoration: none;
+}
+
+ul {
+    list-style: none;
+}
