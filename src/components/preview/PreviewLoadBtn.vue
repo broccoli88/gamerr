@@ -1,10 +1,5 @@
 <script setup>
-import { useGeneralStore } from '../../stores/useGeneralStore'
-import { storeToRefs } from 'pinia'
-
-const generalStore = useGeneralStore()
-const { isDataLoading } = storeToRefs(generalStore)
-
+const props = defineProps(['pending'])
 const emits = defineEmits(['fetch-next-page'])
 
 const emitFetchNextPage = () => {
@@ -14,7 +9,7 @@ const emitFetchNextPage = () => {
 
 <template>
     <button class="load-btn" @click="emitFetchNextPage">
-        <p v-if="!isDataLoading">Load more</p>
+        <p v-if="!props.pending">Load more</p>
         <Icon class="spinner-icon" icon="svg-spinners:ring-resize" v-else />
     </button>
 </template>

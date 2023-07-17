@@ -1,6 +1,4 @@
-<script setup>
-import { Icon } from '@iconify/vue'
-</script>
+<script setup></script>
 <template>
     <section class="header__filtering">
         <span>

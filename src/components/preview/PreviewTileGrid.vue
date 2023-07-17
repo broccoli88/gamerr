@@ -86,7 +86,7 @@ const changeScreenshot = (currentScreenshot) => {
 
         <TransitionFade>
             <section class="preview-tile__extended-description" v-if="isExtendedInfoShown">
-                <div class="c">
+                <div class="preview-tile__extended-row-wrapper">
                     <div class="preview-tile__extended-row">
                         <p>Release date:</p>
                         <p>{{ game.released }}</p>
@@ -124,6 +124,7 @@ const changeScreenshot = (currentScreenshot) => {
 
     &:hover {
         transform: scale(1.03);
+        z-index: 9;
     }
 }
 
@@ -209,7 +210,7 @@ const changeScreenshot = (currentScreenshot) => {
     top: calc(100% - 3rem);
     left: 0;
     width: 100%;
-    z-index: 999;
+    z-index: 9;
 }
 
 .preview-tile__extended-row-wrapper {

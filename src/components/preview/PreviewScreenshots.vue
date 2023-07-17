@@ -28,7 +28,7 @@ const emitChangeScreenshot = (currentScreenshot) => {
 .screenshots-container {
     position: absolute;
     inset: 0;
-    z-index: 99;
+    z-index: 8;
 
     display: grid;
     grid-auto-flow: column;

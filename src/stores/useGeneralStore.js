@@ -14,15 +14,19 @@ export const useGeneralStore = defineStore('generalStore', () => {
         }
     }
 
-    // Load Btn
+    //  Data
 
-    const isDataLoading = ref(false)
+    const allGames = ref([])
+    const filteredGames = ref([])
+    const page = ref(1)
 
     return {
         isSidebarMobileMenuOpen,
         isDesktopView,
         checkWindowWidth,
         isGridActive,
-        isDataLoading
+        page,
+        allGames,
+        filteredGames
     }
 })

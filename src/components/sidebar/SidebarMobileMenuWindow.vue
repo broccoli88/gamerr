@@ -29,8 +29,8 @@ const closeMenu = () => {
 </script>
 
 <template>
-    <section class="sidebar-mobile-menu">
-        <nav class="mobile-menu__nav">
+    <nav class="sidebar-mobile-menu">
+        <section class="mobile-menu__nav">
             <div class="mobile-menu__col">
                 <router-link :to="home.link" class="sidebar__col-link">{{
                     home.title
@@ -58,8 +58,8 @@ const closeMenu = () => {
                     color="black"
                 />
             </div>
-        </nav>
-    </section>
+        </section>
+    </nav>
 </template>
 
 <style lang="scss" scoped>
@@ -68,16 +68,17 @@ const closeMenu = () => {
     grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
     min-height: 100vh;
     padding: 2rem;
-}
-
-.sidebar-mobile-menu {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: max-content;
     z-index: 99;
+    overflow: auto;
     background-color: black;
+}
+
+.sidebar-mobile-menu {
     font-size: 1.4rem;
     font-family: $ff-text;
 }

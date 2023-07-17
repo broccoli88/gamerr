@@ -45,7 +45,7 @@ const changeScreenshot = () => {
 </script>
 
 <template>
-    <article class="preview-tile" @mouseleave="areDetailsVisible = false">
+    <article class="preview-tile" @mouseleave.stop="areDetailsVisible = false">
         <figure class="preview-tile__img-container" @click="changeScreenshot">
             <img
                 :src="game.short_screenshots[screenshotCount].image"

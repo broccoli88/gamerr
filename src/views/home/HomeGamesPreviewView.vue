@@ -3,23 +3,37 @@ import PreviewLoadBtn from '../../components/preview/PreviewLoadBtn.vue'
 import PreviewTileGrid from '../../components/preview/PreviewTileGrid.vue'
 import PreviewTileSingleCol from '../../components/preview/PreviewTileSingleCol.vue'
 import PreviewTileMobile from '../../components/preview/PreviewTileMobile.vue'
+import { useFetchGames } from '../../modules/useFetchGames'
 import { useGeneralStore } from '../../stores/useGeneralStore'
 import { storeToRefs } from 'pinia'
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const generalStore = useGeneralStore()
-const { isDesktopView, isGridActive } = storeToRefs(generalStore)
+const { isDesktopView, isGridActive, allGames, page } = storeToRefs(generalStore)
 
-const allGames = ref([])
+const pending = ref(false)
+
+const fetchAllGames = async () => {
+    pending.value = true
+    const query = `metacritic&page=${page.value}`
+    const data = await useFetchGames(query)
+
+    data.results.forEach((game) => {
+        allGames.value.push(game)
+    })
+
+    pending.value = false
+}
 
 onMounted(() => {
-    console.log(allGames.value)
+    fetchAllGames()
     const loadBtn = document.querySelector('.load-btn')
     const loadBtnObserver = new IntersectionObserver(
         (entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting && allGames.value.length > 0) {
-                    // page.value++;
+                    page.value++
+                    fetchAllGames()
                 }
             })
         },
@@ -43,7 +57,7 @@ onMounted(() => {
         <div class="mobile-view" v-else>
             <PreviewTileMobile v-for="game in allGames" :key="game.id" :game="game" />
         </div>
-        <PreviewLoadBtn />
+        <PreviewLoadBtn :pending="pending" />
     </div>
 </template>
 
