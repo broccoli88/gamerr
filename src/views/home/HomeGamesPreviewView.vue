@@ -9,20 +9,25 @@ import { storeToRefs } from 'pinia'
 import { onMounted, ref } from 'vue'
 
 const generalStore = useGeneralStore()
-const { isDesktopView, isGridActive, allGames, page } = storeToRefs(generalStore)
+const { isDesktopView, isGridActive, allGames, page, isFilter, currentlyDisplayedGames } =
+    storeToRefs(generalStore)
 
 const pending = ref(false)
 
 const fetchAllGames = async () => {
-    pending.value = true
-    const query = `metacritic&page=${page.value}`
-    const data = await useFetchGames(query)
+    if (!isFilter.value) {
+        isFilter.value = false
+        pending.value = true
+        const query = `ordering=-updated&page=${page.value}`
 
-    data.results.forEach((game) => {
-        allGames.value.push(game)
-    })
+        const data = await useFetchGames(query)
 
-    pending.value = false
+        data.results.forEach((game) => {
+            allGames.value.push(game)
+        })
+
+        pending.value = false
+    } else return
 }
 
 onMounted(() => {
@@ -40,7 +45,11 @@ onMounted(() => {
         { rootMargin: '0px 0px 300px 0px' }
     )
 
-    loadBtnObserver.observe(loadBtn)
+    if (!isFilter.value) {
+        loadBtnObserver.observe(loadBtn)
+    } else {
+        loadBtnObserver.unobserve(loadBtn)
+    }
 })
 </script>
 
@@ -48,14 +57,26 @@ onMounted(() => {
     <div class="games-wrapper">
         <div v-if="isDesktopView">
             <div class="desktop-view-grid" v-if="isGridActive">
-                <PreviewTileGrid v-for="game in allGames" :key="game.id" :game="game" />
+                <PreviewTileGrid
+                    v-for="game in currentlyDisplayedGames"
+                    :key="game.id"
+                    :game="game"
+                />
             </div>
             <div class="desktop-view-col" v-else>
-                <PreviewTileSingleCol v-for="game in allGames" :key="game.id" :game="game" />
+                <PreviewTileSingleCol
+                    v-for="game in currentlyDisplayedGames"
+                    :key="game.id"
+                    :game="game"
+                />
             </div>
         </div>
         <div class="mobile-view" v-else>
-            <PreviewTileMobile v-for="game in allGames" :key="game.id" :game="game" />
+            <PreviewTileMobile
+                v-for="game in currentlyDisplayedGames"
+                :key="game.id"
+                :game="game"
+            />
         </div>
         <PreviewLoadBtn :pending="pending" />
     </div>

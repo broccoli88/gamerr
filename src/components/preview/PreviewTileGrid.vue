@@ -11,6 +11,7 @@ import TransitionFade from '../../transitions/TransitionFade.vue'
 import { ref, computed } from 'vue'
 
 const props = defineProps(['game'])
+const gameInfo = ref(props.game)
 
 // Displaying extended info
 
@@ -33,6 +34,13 @@ const additionalPlatforms = computed(() =>
     props.game.parent_platforms.length > 4 ? props.game.parent_platforms.length - 3 : 0
 )
 
+const regEx = /^[a-zA-Z0-9.,!?@#$%^&*()_+{}\[\]:;<=>/'"\\|~` \t:-]+$/
+const checkGameName = regEx.test(gameInfo.value.name)
+
+const gameTitle = computed(() =>
+    checkGameName ? gameInfo.value.name : gameInfo.value.slug.split('-').join(' ')
+)
+
 // Current game screenshot
 
 const screenshotCount = ref(0)
@@ -43,14 +51,17 @@ const changeScreenshot = (currentScreenshot) => {
 
 <template>
     <article class="preview-tile" @mouseover="showExtendedInfo" @mouseleave="hideExtendedInfo">
-        <figure class="preview-tile__img-container">
+        <figure
+            class="preview-tile__img-container"
+            v-if="gameInfo.short_screenshots !== null && gameInfo.short_screenshots.length > 0"
+        >
             <img
-                :src="game.short_screenshots[screenshotCount].image"
+                :src="gameInfo.short_screenshots[screenshotCount].image"
                 alt=""
                 class="preview-tile__img"
             />
             <PreviewScreenshots
-                :screenshots="game.short_screenshots"
+                :screenshots="gameInfo.short_screenshots"
                 :tab="screenshotCount"
                 @change-screenshot="changeScreenshot"
             />
@@ -62,19 +73,22 @@ const changeScreenshot = (currentScreenshot) => {
                     :key="platform.platform.id"
                     :platform="platform.platform"
                 />
-                <span v-if="game.parent_platforms.length > 4">+{{ additionalPlatforms }}</span>
+                <span v-if="gameInfo.parent_platforms.length > 4">+{{ additionalPlatforms }}</span>
                 <div class="preview-tile_metascore">
-                    <PreviewMetaScoreIcon :score="game.metacritic" />
+                    <PreviewMetaScoreIcon
+                        :score="gameInfo.metacritic"
+                        v-if="gameInfo.metacritic !== null"
+                    />
                 </div>
             </section>
             <section class="preview-tile__title-wrapper">
                 <router-link to="#" class="preview-tile__title">
-                    <p>{{ game.name }}</p>
-                    <PreviewRating :ratings="game.ratings" />
+                    <p>{{ gameTitle }}</p>
+                    <PreviewRating :ratings="gameInfo.ratings" v-if="gameInfo.ratings.length > 0" />
                 </router-link>
             </section>
             <section class="preview-tile__option-btns">
-                <PreviewButtonAdd :suggestions="game.added" />
+                <PreviewButtonAdd :suggestions="gameInfo.added" />
                 <TransitionFade>
                     <PreviewButtonGift v-if="isExtendedInfoShown" />
                 </TransitionFade>
@@ -89,12 +103,12 @@ const changeScreenshot = (currentScreenshot) => {
                 <div class="preview-tile__extended-row-wrapper">
                     <div class="preview-tile__extended-row">
                         <p>Release date:</p>
-                        <p>{{ game.released }}</p>
+                        <p>{{ gameInfo.released }}</p>
                     </div>
                     <div class="preview-tile__extended-row">
                         <p>Genres:</p>
                         <div class="preview-tile__extended-row-genre-wrapper">
-                            <router-link to="#" v-for="genre in game.genres" :key="genre.id">
+                            <router-link to="#" v-for="genre in gameInfo.genres" :key="genre.id">
                                 {{ genre.name }}</router-link
                             >
                         </div>
@@ -183,6 +197,7 @@ const changeScreenshot = (currentScreenshot) => {
         font-weight: 600;
         margin-right: 1rem;
         display: inline;
+        text-transform: capitalize;
     }
 
     .icon {

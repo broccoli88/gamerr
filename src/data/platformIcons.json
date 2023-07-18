@@ -1,19 +1,22 @@
 [
-	{ "title": "PC", "icon": "cib:windows", "link": "#" },
-	{
-		"title": "PlayStation",
-		"icon": "ion:logo-playstation",
-		"link": "#"
-	},
-	{ "title": "Xbox", "icon": "ion:xbox", "link": "#" },
-	{
-		"title": "Nintendo",
-		"icon": "simple-icons:nintendo",
-		"link": "#"
-	},
-	{ "title": "iOS", "icon": "ic:outline-phone-iphone", "link": "#" },
-	{ "title": "Android", "icon": "bi:android2", "link": "#" },
-	{ "title": "Linux", "icon": "uiw:linux", "link": "#" },
-	{ "title": "Web", "icon": "mdi:web", "link": "#" },
-	{ "title": "Apple Macintosh", "icon": "mdi:web", "link": "#" }
+    { "title": "PC", "icon": "cib:windows", "link": "#" },
+    {
+        "title": "PlayStation",
+        "icon": "ion:logo-playstation",
+        "link": "#"
+    },
+    { "title": "Xbox", "icon": "ion:xbox", "link": "#" },
+    {
+        "title": "Nintendo",
+        "icon": "simple-icons:nintendo",
+        "link": "#"
+    },
+    { "title": "iOS", "icon": "ic:outline-phone-iphone", "link": "#" },
+    { "title": "Android", "icon": "bi:android2", "link": "#" },
+    { "title": "Linux", "icon": "uiw:linux", "link": "#" },
+    { "title": "Web", "icon": "mdi:web", "link": "#" },
+    { "title": "Apple Macintosh", "icon": "mdi:web", "link": "#" },
+    { "title": "Atari", "icon": "simple-icons:atari", "link": "#" },
+    { "title": "SEGA", "icon": "simple-icons:sega", "link": "#" },
+    { "title": "3DO", "icon": "fxemoji:notchedrightsemi3dot", "link": "#" }
 ]

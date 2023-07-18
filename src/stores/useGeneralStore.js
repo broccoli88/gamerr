@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 export const useGeneralStore = defineStore('generalStore', () => {
     const isSidebarMobileMenuOpen = ref(false)
@@ -19,14 +19,21 @@ export const useGeneralStore = defineStore('generalStore', () => {
     const allGames = ref([])
     const filteredGames = ref([])
     const page = ref(1)
+    const isFilter = ref(false)
+
+    const currentlyDisplayedGames = computed(() =>
+        !isFilter.value ? allGames.value : filteredGames.value
+    )
 
     return {
         isSidebarMobileMenuOpen,
         isDesktopView,
         checkWindowWidth,
         isGridActive,
-        page,
         allGames,
-        filteredGames
+        filteredGames,
+        page,
+        isFilter,
+        currentlyDisplayedGames
     }
 })

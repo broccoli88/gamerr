@@ -1,10 +1,11 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = defineProps(['ratings'])
+const rating = ref(props.ratings)
 
 const higherRating = computed(() =>
-    props.ratings.sort((a, b) => {
+    rating.value.sort((a, b) => {
         return a.percent - b.percent
     })
 ).value.reverse()

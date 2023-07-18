@@ -5,10 +5,11 @@ import HeaderDesktopFilterList from './header/HeaderDesktopFilterList.vue'
 import { useHeaderStore } from '../stores/useHeaderStore'
 import { useGeneralStore } from '../stores/useGeneralStore'
 import { storeToRefs } from 'pinia'
+import { useFetchGames } from '../modules/useFetchGames'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const generalStore = useGeneralStore()
-const { isDesktopView, isGridActive } = storeToRefs(generalStore)
+const { isDesktopView, isGridActive, page, filteredGames, isFilter } = storeToRefs(generalStore)
 const headerStore = useHeaderStore()
 const {
     orderBy,
@@ -26,6 +27,25 @@ const {
 const orderByFilter = ref('')
 const isOrderByFilterListOpen = ref(false)
 
+const filterOption = computed(() => {
+    switch (orderByFilter.value.toLowerCase()) {
+        case 'relevance':
+            return 'ordering=-updated'
+        case 'date added':
+            return 'ordering=-added'
+        case 'name':
+            return 'ordering=-name'
+        case 'release date':
+            return 'ordering=-released'
+        case 'popularity':
+            return 'ordering=-added'
+        case 'average rating':
+            return 'ordering=-rating'
+        default:
+            return 'ordering=-metacritic'
+    }
+})
+
 const openOrderByFilterList = () => {
     const orderByHeaderFiltering = document.querySelector('.orderby-header-filtering')
 
@@ -37,7 +57,12 @@ const closeOrderByFilterList = () => {
     isOrderByFilterListOpen.value = false
 }
 
-const selectOrderByFilter = (filter) => {
+const selectOrderByFilter = async (filter) => {
+    orderByFilter.value = null
+    isFilter.value = true
+    filteredGames.value = []
+    page.value = 1
+
     orderByFilter.value = filter.name
     filter.selected = true
 
@@ -45,6 +70,14 @@ const selectOrderByFilter = (filter) => {
         if (orderType.name !== filter.name) {
             orderType.selected = false
         }
+    })
+
+    const includedPlatforms = ref(`parent_platforms=1`)
+    const query = ref(`${filterOption.value}&page=${page.value}&${includedPlatforms.value}`)
+    const data = await useFetchGames(query.value)
+
+    data.results.forEach((game) => {
+        filteredGames.value.push(game)
     })
 
     setTimeout(() => {
@@ -135,9 +168,6 @@ const selectAllTypes = () => {
         headerStore.closePlatformFilterList()
     }, 300)
 }
-
-// Desktop
-const selectDesktopPlatformFilter = () => {}
 
 // ...::: [ Global hooks ] :::...
 
@@ -238,7 +268,6 @@ const activateGrid = () => {
                             v-if="isPlatformFilterListOpen"
                             class="platforms"
                             :filters="platforms"
-                            @select-filter="selectDesktopPlatformFilter"
                         >
                             <template v-slot:list-title> Platforms</template>
                             <template v-slot:clear-btn>
