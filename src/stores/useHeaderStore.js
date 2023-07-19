@@ -15,12 +15,12 @@ export const useHeaderStore = defineStore('headerStore', () => {
         width.value = `${container.clientWidth}px`
     }
 
-    //  Mobile Filtering
+    //  Filtering
 
     const orderBy = ref(filters.orderBy)
     const platforms = ref(filters.platforms)
 
-    const selectedPlatformFilter = ref(null)
+    const selectedPlatformFilter = ref('PC')
     const currentPlatformTypeFilter = ref(null)
     const currentPlatformTypeParent = ref(null)
 
@@ -56,6 +56,7 @@ export const useHeaderStore = defineStore('headerStore', () => {
         isPlatformFilterListOpen.value = false
         isPlatformFilterSubListOpen.value = false
         currentPlatformTypeFilter.value = null
+        currentPlatformTypeParent.value = null
     }
 
     // Desktop List
@@ -71,6 +72,8 @@ export const useHeaderStore = defineStore('headerStore', () => {
             }, 300)
         }
     }
+
+    // Fetching filtered data
 
     return {
         orderBy,

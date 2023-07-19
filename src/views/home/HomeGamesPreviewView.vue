@@ -37,7 +37,7 @@ onMounted(() => {
         (entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting && allGames.value.length > 0) {
-                    page.value++
+                    // page.value++
                     fetchAllGames()
                 }
             })

@@ -2,6 +2,7 @@
 import HeaderFilterBar from './header/HeaderFilterBar.vue'
 import HeaderMobileFilterList from './header/HeaderMobileFilterList.vue'
 import HeaderDesktopFilterList from './header/HeaderDesktopFilterList.vue'
+import { useFetchPlatforms } from '../modules/useFetchPlatforms'
 import { useHeaderStore } from '../stores/useHeaderStore'
 import { useGeneralStore } from '../stores/useGeneralStore'
 import { storeToRefs } from 'pinia'
@@ -57,11 +58,8 @@ const closeOrderByFilterList = () => {
     isOrderByFilterListOpen.value = false
 }
 
-const selectOrderByFilter = async (filter) => {
+const selectOrderByFilter = (filter) => {
     orderByFilter.value = null
-    isFilter.value = true
-    filteredGames.value = []
-    page.value = 1
 
     orderByFilter.value = filter.name
     filter.selected = true
@@ -70,14 +68,6 @@ const selectOrderByFilter = async (filter) => {
         if (orderType.name !== filter.name) {
             orderType.selected = false
         }
-    })
-
-    const includedPlatforms = ref(`parent_platforms=1`)
-    const query = ref(`${filterOption.value}&page=${page.value}&${includedPlatforms.value}`)
-    const data = await useFetchGames(query.value)
-
-    data.results.forEach((game) => {
-        filteredGames.value.push(game)
     })
 
     setTimeout(() => {
@@ -119,7 +109,29 @@ const openPlatformFilterList = () => {
     isPlatformFilterListOpen.value = !isPlatformFilterListOpen.value
 }
 
-const selectPlatformFilter = (filter) => {
+const fetchGamesByFilter = async (selectedPlatformFilter) => {
+    const platforms = await useFetchPlatforms()
+    const platformId = computed(() =>
+        platforms.results.find((p) => {
+            return p.name.toLowerCase() === selectedPlatformFilter.name.toLowerCase()
+        })
+    )
+
+    const query = ref(`${filterOption.value}&platforms=${platformId.value.id}&page=${page.value}`)
+
+    console.log(query.value)
+    const data = await useFetchGames(query.value)
+
+    console.log('data:', data)
+
+    data.results.forEach((game) => {
+        filteredGames.value.push(game)
+    })
+
+    // console.log(filteredGames.value)
+}
+
+const selectPlatformFilter = async (filter) => {
     // Selecting platform without additional types
 
     if (!filter.type && !isPlatformFilterSubListOpen.value) {
@@ -167,6 +179,12 @@ const selectAllTypes = () => {
     setTimeout(() => {
         headerStore.closePlatformFilterList()
     }, 300)
+}
+
+const filterGames = () => {
+    filteredGames.value = []
+    isFilter.value = true
+    page.value = 1
 }
 
 // ...::: [ Global hooks ] :::...
