@@ -34,7 +34,7 @@ const additionalPlatforms = computed(() =>
     props.game.parent_platforms.length > 4 ? props.game.parent_platforms.length - 3 : 0
 )
 
-const regEx = /^[a-zA-Z0-9.,!?@#$%^&*()_+{}\[\]:;<=>/'"\\|~` \t:-]+$/
+const regEx = /^[a-zA-Z0-9.,!?@#$%^&*()_+{}[\]:;<=>/'"\\|~` \t:-]+$/
 const checkGameName = regEx.test(gameInfo.value.name)
 
 const gameTitle = computed(() =>

@@ -2,50 +2,33 @@
 import HeaderFilterBar from './header/HeaderFilterBar.vue'
 import HeaderMobileFilterList from './header/HeaderMobileFilterList.vue'
 import HeaderDesktopFilterList from './header/HeaderDesktopFilterList.vue'
-import { useFetchPlatforms } from '../modules/useFetchPlatforms'
 import { useHeaderStore } from '../stores/useHeaderStore'
 import { useGeneralStore } from '../stores/useGeneralStore'
 import { storeToRefs } from 'pinia'
-import { useFetchGames } from '../modules/useFetchGames'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const generalStore = useGeneralStore()
-const { isDesktopView, isGridActive, page, filteredGames, isFilter } = storeToRefs(generalStore)
+const { isDesktopView, isGridActive } = storeToRefs(generalStore)
 const headerStore = useHeaderStore()
 const {
     orderBy,
+    orderByFilter,
     platforms,
     selectedPlatformFilter,
     currentPlatformTypeFilter,
     currentPlatformTypeParent,
     currentPlatformFilters,
     isPlatformFilterSubListOpen,
-    isPlatformFilterListOpen
+    isPlatformFilterListOpen,
+    filteredGames,
+    page,
+    isFilter,
+    parentPlatformQuery
 } = storeToRefs(headerStore)
 
 //...::: [ Order by filtering ] :::...
 
-const orderByFilter = ref('')
 const isOrderByFilterListOpen = ref(false)
-
-const filterOption = computed(() => {
-    switch (orderByFilter.value.toLowerCase()) {
-        case 'relevance':
-            return 'ordering=-updated'
-        case 'date added':
-            return 'ordering=-added'
-        case 'name':
-            return 'ordering=-name'
-        case 'release date':
-            return 'ordering=-released'
-        case 'popularity':
-            return 'ordering=-added'
-        case 'average rating':
-            return 'ordering=-rating'
-        default:
-            return 'ordering=-metacritic'
-    }
-})
 
 const openOrderByFilterList = () => {
     const orderByHeaderFiltering = document.querySelector('.orderby-header-filtering')
@@ -58,7 +41,7 @@ const closeOrderByFilterList = () => {
     isOrderByFilterListOpen.value = false
 }
 
-const selectOrderByFilter = (filter) => {
+const selectOrderByFilter = async (filter) => {
     orderByFilter.value = null
 
     orderByFilter.value = filter.name
@@ -69,6 +52,11 @@ const selectOrderByFilter = (filter) => {
             orderType.selected = false
         }
     })
+    filteredGames.value = []
+    isFilter.value = true
+    page.value = 1
+
+    await headerStore.fetchGamesByFilter()
 
     setTimeout(() => {
         closeOrderByFilterList()
@@ -109,28 +97,6 @@ const openPlatformFilterList = () => {
     isPlatformFilterListOpen.value = !isPlatformFilterListOpen.value
 }
 
-const fetchGamesByFilter = async (selectedPlatformFilter) => {
-    const platforms = await useFetchPlatforms()
-    const platformId = computed(() =>
-        platforms.results.find((p) => {
-            return p.name.toLowerCase() === selectedPlatformFilter.name.toLowerCase()
-        })
-    )
-
-    const query = ref(`${filterOption.value}&platforms=${platformId.value.id}&page=${page.value}`)
-
-    console.log(query.value)
-    const data = await useFetchGames(query.value)
-
-    console.log('data:', data)
-
-    data.results.forEach((game) => {
-        filteredGames.value.push(game)
-    })
-
-    // console.log(filteredGames.value)
-}
-
 const selectPlatformFilter = async (filter) => {
     // Selecting platform without additional types
 
@@ -138,6 +104,11 @@ const selectPlatformFilter = async (filter) => {
         headerStore.clearPlatformSelection(filter)
         filter.selected = true
         selectedPlatformFilter.value = filter.name
+
+        filteredGames.value = []
+        isFilter.value = true
+        page.value = 1
+        await headerStore.fetchGamesByFilter(parentPlatformQuery.value)
 
         setTimeout(() => {
             headerStore.closePlatformFilterList()
@@ -165,6 +136,10 @@ const selectPlatformFilter = async (filter) => {
                 platform.selected = true
             }
         })
+        filteredGames.value = []
+        isFilter.value = true
+        page.value = 1
+        await headerStore.fetchGamesByFilter()
 
         setTimeout(() => {
             headerStore.closePlatformFilterList()
@@ -179,12 +154,6 @@ const selectAllTypes = () => {
     setTimeout(() => {
         headerStore.closePlatformFilterList()
     }, 300)
-}
-
-const filterGames = () => {
-    filteredGames.value = []
-    isFilter.value = true
-    page.value = 1
 }
 
 // ...::: [ Global hooks ] :::...

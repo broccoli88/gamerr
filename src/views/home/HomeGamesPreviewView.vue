@@ -5,12 +5,15 @@ import PreviewTileSingleCol from '../../components/preview/PreviewTileSingleCol.
 import PreviewTileMobile from '../../components/preview/PreviewTileMobile.vue'
 import { useFetchGames } from '../../modules/useFetchGames'
 import { useGeneralStore } from '../../stores/useGeneralStore'
+import { useHeaderStore } from '../../stores/useHeaderStore'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref } from 'vue'
 
 const generalStore = useGeneralStore()
-const { isDesktopView, isGridActive, allGames, page, isFilter, currentlyDisplayedGames } =
-    storeToRefs(generalStore)
+const { isDesktopView, isGridActive } = storeToRefs(generalStore)
+
+const headerStore = useHeaderStore()
+const { allGames, page, isFilter, currentlyDisplayedGames } = storeToRefs(headerStore)
 
 const pending = ref(false)
 
@@ -18,7 +21,8 @@ const fetchAllGames = async () => {
     if (!isFilter.value) {
         isFilter.value = false
         pending.value = true
-        const query = `ordering=-updated&page=${page.value}`
+        const currentDate = new Date().toJSON().slice(0, 10)
+        const query = `dates=2023-01-01,${currentDate}&ordering=-added&page=${page.value}`
 
         const data = await useFetchGames(query)
 
@@ -38,7 +42,7 @@ onMounted(() => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting && allGames.value.length > 0) {
                     // page.value++
-                    fetchAllGames()
+                    // fetchAllGames()
                 }
             })
         },

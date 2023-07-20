@@ -1,18 +1,14 @@
 <script setup>
 import { useHeaderStore } from '../../stores/useHeaderStore'
-import { useGeneralStore } from '../../stores/useGeneralStore'
-import { useFetchPlatforms } from '../../modules/useFetchPlatforms'
-import { useFetchGames } from '../../modules/useFetchGames'
-import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 
 const props = defineProps(['filters'])
 
 const headerStore = useHeaderStore()
-const generalStore = useGeneralStore()
-const { filteredGames, isFilter } = storeToRefs(generalStore)
 
-const selectPlatformTypeFilter = async (selectedFilter) => {
+const { filteredGames, isFilter } = storeToRefs(headerStore)
+
+const selectPlatformTypeFilter = (selectedFilter) => {
     filteredGames.value = []
     isFilter.value = true
 

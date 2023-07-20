@@ -16,24 +16,24 @@ export const useGeneralStore = defineStore('generalStore', () => {
 
     //  Data
 
-    const allGames = ref([])
-    const filteredGames = ref([])
-    const page = ref(1)
-    const isFilter = ref(false)
+    // const allGames = ref([])
+    // const filteredGames = ref([])
+    // const page = ref(1)
+    // const isFilter = ref(false)
 
-    const currentlyDisplayedGames = computed(() =>
-        !isFilter.value ? allGames.value : filteredGames.value
-    )
+    // const currentlyDisplayedGames = computed(() =>
+    //     !isFilter.value ? allGames.value : filteredGames.value
+    // )
 
     return {
         isSidebarMobileMenuOpen,
         isDesktopView,
         checkWindowWidth,
-        isGridActive,
-        allGames,
-        filteredGames,
-        page,
-        isFilter,
-        currentlyDisplayedGames
+        isGridActive
+        // allGames,
+        // filteredGames,
+        // page,
+        // isFilter,
+        // currentlyDisplayedGames
     }
 })

@@ -18,7 +18,7 @@ const hideSubFilterList = () => {
 }
 
 const selectPlatformFilter = (selectedFilter) => {
-    headerStore.selectFilter(selectedFilter)
+    headerStore.selectFilter(selectedFilter, headerStore.parentPlatformQuery)
 }
 </script>
 

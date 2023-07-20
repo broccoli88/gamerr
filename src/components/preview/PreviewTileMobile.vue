@@ -11,11 +11,7 @@ import PreviewButtonShowRelated from './PreviewButtonShowRelated.vue'
 import { computed, ref } from 'vue'
 
 const props = defineProps(['game'])
-
-// const apiQuery = ref(`games/${props.game.id}/movies`);
-// const { data: details } = await useFetch("/api/rawgApiDetails", {
-// 	query: { apiQuery },
-// });
+const gameInfo = ref(props.game)
 
 const areDetailsVisible = ref(false)
 
@@ -33,6 +29,13 @@ const additionalPlatforms = computed(() =>
     props.game.parent_platforms.length > 4 ? props.game.parent_platforms.length - 3 : 0
 )
 
+const regEx = /^[a-zA-Z0-9.,!?@#$%^&*()_+{}[\]:;<=>/'"\\|~` \t:-]+$/
+const checkGameName = regEx.test(gameInfo.value.name)
+
+const gameTitle = computed(() =>
+    checkGameName ? gameInfo.value.name : gameInfo.value.slug.split('-').join(' ')
+)
+
 // Current game screenshot
 
 const screenshotCount = ref(0)
@@ -46,7 +49,11 @@ const changeScreenshot = () => {
 
 <template>
     <article class="preview-tile" @mouseleave.stop="areDetailsVisible = false">
-        <figure class="preview-tile__img-container" @click="changeScreenshot">
+        <figure
+            class="preview-tile__img-container"
+            @click="changeScreenshot"
+            v-if="game.short_screenshots.length > 0"
+        >
             <img
                 :src="game.short_screenshots[screenshotCount].image"
                 alt=""
@@ -68,8 +75,8 @@ const changeScreenshot = () => {
             </section>
             <section class="preview-tile__title-wrapper">
                 <router-link to="#" class="preview-tile__title">
-                    <p>{{ game.name }}</p>
-                    <PreviewRating :ratings="game.ratings" />
+                    <p>{{ gameTitle }}</p>
+                    <PreviewRating :ratings="game.ratings" v-if="game.ratings.length > 0" />
                 </router-link>
             </section>
             <section class="preview-tile__option-btns">

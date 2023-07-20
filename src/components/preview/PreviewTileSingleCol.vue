@@ -10,6 +10,7 @@ import PreviewButtonShowRelated from './PreviewButtonShowRelated.vue'
 
 import { computed, ref } from 'vue'
 const props = defineProps(['game'])
+const gameInfo = ref(props.game)
 
 const reducedPlatform = computed(() =>
     props.game.parent_platforms.length > 4
@@ -19,6 +20,13 @@ const reducedPlatform = computed(() =>
 
 const additionalPlatforms = computed(() =>
     props.game.parent_platforms.length > 4 ? props.game.parent_platforms.length - 3 : 0
+)
+
+const regEx = /^[a-zA-Z0-9.,!?@#$%^&*()_+{}[\]:;<=>/'"\\|~` \t:-]+$/
+const checkGameName = regEx.test(gameInfo.value.name)
+
+const gameTitle = computed(() =>
+    checkGameName ? gameInfo.value.name : gameInfo.value.slug.split('-').join(' ')
 )
 
 // Current game screenshot
@@ -41,6 +49,7 @@ const changeScreenshot = (currentScreenshot) => {
                 :screenshots="game.short_screenshots"
                 :tab="screenshotCount"
                 @change-screenshot="changeScreenshot"
+                v-if="game.short_screenshots.length > 0"
             />
         </figure>
         <div class="preview-tile__content">
@@ -54,9 +63,9 @@ const changeScreenshot = (currentScreenshot) => {
             </section>
             <section class="preview-tile__title-wrapper">
                 <router-link to="#" class="preview-tile__title">
-                    <p>{{ game.name }}</p>
+                    <p>{{ gameTitle }}</p>
 
-                    <PreviewRating :ratings="game.ratings" />
+                    <PreviewRating :ratings="game.ratings" v-if="game.ratings.length > 0" />
                 </router-link>
                 <PreviewButtonShowRelated />
             </section>
