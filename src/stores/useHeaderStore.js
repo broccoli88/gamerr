@@ -13,7 +13,7 @@ export const useHeaderStore = defineStore('headerStore', () => {
 
     const checkFilterListPosition = (container) => {
         positionX.value = `${container.offsetLeft}px`
-        positionY.value = `${container.offsettop}px`
+        positionY.value = `${container.offsetTop}px`
         width.value = `${container.clientWidth}px`
     }
 
@@ -23,6 +23,7 @@ export const useHeaderStore = defineStore('headerStore', () => {
     const filteredGames = ref([])
     const page = ref(1)
     const isFilter = ref(false)
+    const currentPlatformQuery = ref('')
     const parentPlatformQuery = ref('/lists/parents')
 
     const currentlyDisplayedGames = computed(() =>
@@ -137,8 +138,6 @@ export const useHeaderStore = defineStore('headerStore', () => {
 
         const data = await useFetchGames(query.value)
 
-        console.log('data:', data)
-
         data.results.forEach((game) => {
             filteredGames.value.push(game)
         })
@@ -173,6 +172,7 @@ export const useHeaderStore = defineStore('headerStore', () => {
         isFilter,
         currentlyDisplayedGames,
         fetchGamesByFilter,
-        parentPlatformQuery
+        parentPlatformQuery,
+        currentPlatformQuery
     }
 })

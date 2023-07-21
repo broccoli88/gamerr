@@ -7,13 +7,14 @@ import { useFetchGames } from '../../modules/useFetchGames'
 import { useGeneralStore } from '../../stores/useGeneralStore'
 import { useHeaderStore } from '../../stores/useHeaderStore'
 import { storeToRefs } from 'pinia'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const generalStore = useGeneralStore()
 const { isDesktopView, isGridActive } = storeToRefs(generalStore)
 
 const headerStore = useHeaderStore()
-const { allGames, page, isFilter, currentlyDisplayedGames } = storeToRefs(headerStore)
+const { allGames, filteredGames, page, isFilter, currentlyDisplayedGames, currentPlatformQuery } =
+    storeToRefs(headerStore)
 
 const pending = ref(false)
 
@@ -34,15 +35,25 @@ const fetchAllGames = async () => {
     } else return
 }
 
+/*
+
+
+*/
+
 onMounted(() => {
     fetchAllGames()
     const loadBtn = document.querySelector('.load-btn')
     const loadBtnObserver = new IntersectionObserver(
         (entries) => {
             entries.forEach((entry) => {
-                if (entry.isIntersecting && allGames.value.length > 0) {
-                    // page.value++
-                    // fetchAllGames()
+                if (entry.isIntersecting && allGames.value.length > 0 && !isFilter.value) {
+                    page.value++
+                    fetchAllGames()
+                }
+
+                if (entry.isIntersecting && filteredGames.value.length > 0 && isFilter.value) {
+                    page.value++
+                    headerStore.fetchGamesByFilter(currentPlatformQuery.value)
                 }
             })
         },
@@ -54,6 +65,52 @@ onMounted(() => {
     } else {
         loadBtnObserver.unobserve(loadBtn)
     }
+})
+
+// Rendering grid
+const gamesContainerWidth = ref()
+const colCount = ref(null)
+const gamesList1 = ref([])
+const gamesList2 = ref([])
+const gamesList3 = ref([])
+const gamesList4 = ref([])
+
+const getWrapperWidth = () => {
+    if (isDesktopView.value && isGridActive) {
+        const gamesWrapper = document.querySelector('.games-wrapper')
+        if (gamesWrapper) {
+            gamesContainerWidth.value = gamesWrapper.clientWidth
+        }
+    }
+}
+
+const gridColCount = () => {
+    if (gamesContainerWidth.value <= 880) {
+        colCount.value = 2
+    } else if (880 < gamesContainerWidth.value <= 1180) {
+        colCount.value = 3
+    } else if (1180 < gamesContainerWidth.value <= 1480) {
+        colCount.value = 4
+    } else {
+        colCount.value = 5
+    }
+}
+
+const gridRender = () => {
+    currentlyDisplayedGames.value.forEach((game) => {
+        if (colCount.value === 2) {
+            //
+        }
+    })
+}
+
+const handleGrid = () => {
+    getWrapperWidth()
+    gridColCount()
+}
+
+onMounted(() => {
+    window.addEventListener('resize', handleGrid)
 })
 </script>
 
@@ -103,6 +160,6 @@ onMounted(() => {
 .desktop-view-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(28rem, 100%), 1fr));
-    gap: 1rem;
+    gap: 2rem;
 }
 </style>

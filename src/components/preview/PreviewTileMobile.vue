@@ -52,7 +52,7 @@ const changeScreenshot = () => {
         <figure
             class="preview-tile__img-container"
             @click="changeScreenshot"
-            v-if="game.short_screenshots.length > 0"
+            v-if="game.short_screenshots !== null && game.short_screenshots.length > 0"
         >
             <img
                 :src="game.short_screenshots[screenshotCount].image"

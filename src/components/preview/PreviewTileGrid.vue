@@ -7,8 +7,14 @@ import PreviewButtonAdd from './PreviewButtonAdd.vue'
 import PreviewButtonGift from './PreviewButtonGift.vue'
 import PreviewButtonRate from './PreviewButtonRate.vue'
 import PreviewButtonShowRelated from './PreviewButtonShowRelated.vue'
+import PreviewRateGameWindow from './PreviewRateGameWindow.vue'
 import TransitionFade from '../../transitions/TransitionFade.vue'
-import { ref, computed } from 'vue'
+import { useGeneralStore } from '../../stores/useGeneralStore'
+import { ref, computed, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+
+const generalStore = useGeneralStore()
+const { isDesktopView, isRateGameWindowOpen } = storeToRefs(generalStore)
 
 const props = defineProps(['game'])
 const gameInfo = ref(props.game)
@@ -47,6 +53,39 @@ const screenshotCount = ref(0)
 const changeScreenshot = (currentScreenshot) => {
     screenshotCount.value = currentScreenshot
 }
+
+// Rate game window
+const isTileRateGameWindowOpen = ref(false)
+
+const openRateGameWindow = () => {
+    if (isDesktopView.value) {
+        isTileRateGameWindowOpen.value = true
+    }
+}
+
+const closeRateGameWindow = () => {
+    if (isDesktopView.value) {
+        isTileRateGameWindowOpen.value = false
+    }
+}
+
+const handleRateGameWindowClick = (e) => {
+    if (isTileRateGameWindowOpen.value) {
+        const target = e.target
+        const rateGameWindowContainer = document.querySelector('.rate-game-wrapper')
+        const rateButton = document.querySelector('.current-rate-btn')
+
+        if (!rateGameWindowContainer.contains(target) && !rateButton.contains(target)) {
+            isTileRateGameWindowOpen.value = false
+
+            rateButton.classList.remove('current-rate-btn')
+        }
+    }
+}
+
+onMounted(() => {
+    window.addEventListener('click', handleRateGameWindowClick)
+})
 </script>
 
 <template>
@@ -92,9 +131,19 @@ const changeScreenshot = (currentScreenshot) => {
                 <TransitionFade>
                     <PreviewButtonGift v-if="isExtendedInfoShown" />
                 </TransitionFade>
+
                 <TransitionFade>
-                    <PreviewButtonRate v-if="isExtendedInfoShown" />
+                    <PreviewButtonRate
+                        v-show="isExtendedInfoShown"
+                        @open-rate-game-window="openRateGameWindow"
+                        ref="button"
+                    />
                 </TransitionFade>
+                <PreviewRateGameWindow
+                    ref="rateWindow"
+                    v-if="isTileRateGameWindowOpen"
+                    @close-rate-game-window="closeRateGameWindow"
+                />
             </section>
         </div>
 
@@ -211,6 +260,7 @@ const changeScreenshot = (currentScreenshot) => {
     gap: 0.5rem;
     margin-bottom: 1rem;
     height: 2.5rem;
+    position: relative;
 }
 
 .preview-tile__extended-description {

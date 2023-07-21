@@ -6,11 +6,12 @@ const props = defineProps(['filters'])
 
 const headerStore = useHeaderStore()
 
-const { filteredGames, isFilter } = storeToRefs(headerStore)
+const { filteredGames, isFilter, currentPlatformQuery } = storeToRefs(headerStore)
 
 const selectPlatformTypeFilter = (selectedFilter) => {
     filteredGames.value = []
     isFilter.value = true
+    currentPlatformQuery.value = ''
 
     headerStore.clearPlatformTypeSelection(selectedFilter)
     headerStore.selectFilter(selectedFilter)

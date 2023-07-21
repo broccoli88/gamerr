@@ -23,7 +23,8 @@ const {
     filteredGames,
     page,
     isFilter,
-    parentPlatformQuery
+    parentPlatformQuery,
+    currentPlatformQuery
 } = storeToRefs(headerStore)
 
 //...::: [ Order by filtering ] :::...
@@ -104,7 +105,7 @@ const selectPlatformFilter = async (filter) => {
         headerStore.clearPlatformSelection(filter)
         filter.selected = true
         selectedPlatformFilter.value = filter.name
-
+        currentPlatformQuery.value = parentPlatformQuery.value
         filteredGames.value = []
         isFilter.value = true
         page.value = 1
@@ -139,6 +140,7 @@ const selectPlatformFilter = async (filter) => {
         filteredGames.value = []
         isFilter.value = true
         page.value = 1
+        currentPlatformQuery.value = ''
         await headerStore.fetchGamesByFilter()
 
         setTimeout(() => {

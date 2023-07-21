@@ -1,10 +1,32 @@
+<script setup>
+import { storeToRefs } from 'pinia'
+import { useGeneralStore } from '../../stores/useGeneralStore'
+import { ref } from 'vue'
+
+const emits = defineEmits(['open-rate-game-window'])
+
+const generalStore = useGeneralStore()
+const { isRateGameWindowOpen, isDesktopView } = storeToRefs(generalStore)
+
+const rateBtn = ref()
+
+const openRateGameWindow = () => {
+    if (!isDesktopView.value) {
+        isRateGameWindowOpen.value = true
+    }
+
+    if (isDesktopView.value) {
+        rateBtn.value.classList.add('current-rate-btn')
+        emits('open-rate-game-window')
+    }
+}
+</script>
+
 <template>
-    <button class="btn-rate">
-        <Icon class="rate-icon" icon="mdi:dots-horizontal" />
+    <button class="btn-rate" ref="rateBtn">
+        <Icon class="rate-icon" icon="mdi:dots-horizontal" @click="openRateGameWindow" />
     </button>
 </template>
-
-<script setup></script>
 
 <style lang="scss" scoped>
 .btn-rate {
@@ -20,6 +42,7 @@
 
     border: none;
     cursor: pointer;
+    position: relative;
 }
 
 .rate-icon {
