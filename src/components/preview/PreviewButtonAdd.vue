@@ -22,9 +22,21 @@ const props = defineProps(['suggestions'])
     border-radius: 4px;
 
     gap: 0.5rem;
+    transition: 0.2s all ease-in;
+
+    &:hover,
+    &:focus {
+        background-color: white;
+        color: black;
+
+        .add-icon {
+            color: black;
+        }
+    }
 }
 
 .add-icon {
     font-size: 1.3em;
+    transition: 0.2s all ease-in;
 }
 </style>

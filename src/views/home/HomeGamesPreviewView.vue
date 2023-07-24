@@ -7,16 +7,21 @@ import { useFetchGames } from '../../modules/useFetchGames'
 import { useGeneralStore } from '../../stores/useGeneralStore'
 import { useHeaderStore } from '../../stores/useHeaderStore'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const generalStore = useGeneralStore()
 const { isDesktopView, isGridActive } = storeToRefs(generalStore)
 
 const headerStore = useHeaderStore()
-const { allGames, filteredGames, page, isFilter, currentlyDisplayedGames, currentPlatformQuery } =
-    storeToRefs(headerStore)
-
-const pending = ref(false)
+const {
+    allGames,
+    filteredGames,
+    page,
+    isFilter,
+    currentlyDisplayedGames,
+    currentPlatformQuery,
+    pending
+} = storeToRefs(headerStore)
 
 const fetchAllGames = async () => {
     if (!isFilter.value) {
@@ -35,13 +40,137 @@ const fetchAllGames = async () => {
     } else return
 }
 
-/*
+// Rendering grid
+const gamesContainerWidth = ref()
+const colCount = ref(null)
+const addGameCount = ref(1)
 
+const gridGameLists = ref({
+    gamesListCol1: [],
+    gamesListCol2: [],
+    gamesListCol3: [],
+    gamesListCol4: [],
+    gamesListCol5: []
+})
 
-*/
+const getWrapperWidth = () => {
+    if (isDesktopView.value && isGridActive) {
+        const gamesWrapper = document.querySelector('.games-wrapper')
+        if (gamesWrapper) {
+            gamesContainerWidth.value = gamesWrapper.clientWidth
+        }
+    }
+}
 
-onMounted(() => {
-    fetchAllGames()
+const gridColCount = () => {
+    if (gamesContainerWidth.value > 1380) {
+        colCount.value = 5
+    } else if (1100 < gamesContainerWidth.value && gamesContainerWidth.value <= 1380) {
+        colCount.value = 4
+    } else if (820 < gamesContainerWidth.value && gamesContainerWidth.value <= 1100) {
+        colCount.value = 3
+    } else if (820 >= gamesContainerWidth.value) {
+        colCount.value = 2
+    }
+}
+
+const clearGridLists = () => {
+    addGameCount.value = 1
+    gridGameLists.value.gamesListCol1 = []
+    gridGameLists.value.gamesListCol2 = []
+    gridGameLists.value.gamesListCol3 = []
+    gridGameLists.value.gamesListCol4 = []
+    gridGameLists.value.gamesListCol5 = []
+}
+
+const gridRender = () => {
+    currentlyDisplayedGames.value.forEach((game) => {
+        if (colCount.value === 2) {
+            if (addGameCount.value === 1) {
+                gridGameLists.value.gamesListCol1.push(game)
+                addGameCount.value++
+            } else if (addGameCount.value === 2) {
+                gridGameLists.value.gamesListCol2.push(game)
+                addGameCount.value = 1
+            }
+        }
+
+        if (colCount.value === 3) {
+            if (addGameCount.value === 1) {
+                gridGameLists.value.gamesListCol1.push(game)
+                addGameCount.value++
+            } else if (addGameCount.value === 2) {
+                gridGameLists.value.gamesListCol2.push(game)
+                addGameCount.value++
+            } else if (addGameCount.value === 3) {
+                gridGameLists.value.gamesListCol3.push(game)
+                addGameCount.value = 1
+            }
+        }
+
+        if (colCount.value === 4) {
+            if (addGameCount.value === 1) {
+                gridGameLists.value.gamesListCol1.push(game)
+                addGameCount.value++
+            } else if (addGameCount.value === 2) {
+                gridGameLists.value.gamesListCol2.push(game)
+                addGameCount.value++
+            } else if (addGameCount.value === 3) {
+                gridGameLists.value.gamesListCol3.push(game)
+                addGameCount.value++
+            } else if (addGameCount.value === 4) {
+                gridGameLists.value.gamesListCol4.push(game)
+                addGameCount.value = 1
+            }
+        }
+
+        if (colCount.value > 4) {
+            if (addGameCount.value === 1) {
+                gridGameLists.value.gamesListCol1.push(game)
+                addGameCount.value++
+            } else if (addGameCount.value === 2) {
+                gridGameLists.value.gamesListCol2.push(game)
+                addGameCount.value++
+            } else if (addGameCount.value === 3) {
+                gridGameLists.value.gamesListCol3.push(game)
+                addGameCount.value++
+            } else if (addGameCount.value === 4) {
+                gridGameLists.value.gamesListCol4.push(game)
+                addGameCount.value++
+            } else if (addGameCount.value > 4) {
+                gridGameLists.value.gamesListCol5.push(game)
+                addGameCount.value = 1
+            }
+        }
+    })
+}
+
+const handleGrid = () => {
+    clearGridLists()
+    gridRender()
+}
+
+watch(gamesContainerWidth, () => {
+    gridColCount()
+})
+
+watch(colCount, () => {
+    handleGrid()
+})
+
+watch(pending, () => {
+    handleGrid()
+})
+
+onMounted(async () => {
+    window.addEventListener('resize', () => {
+        getWrapperWidth()
+    })
+
+    await fetchAllGames()
+    getWrapperWidth()
+    gridColCount()
+
     const loadBtn = document.querySelector('.load-btn')
     const loadBtnObserver = new IntersectionObserver(
         (entries) => {
@@ -49,11 +178,17 @@ onMounted(() => {
                 if (entry.isIntersecting && allGames.value.length > 0 && !isFilter.value) {
                     page.value++
                     fetchAllGames()
+                    if (isGridActive) {
+                        handleGrid()
+                    }
                 }
 
                 if (entry.isIntersecting && filteredGames.value.length > 0 && isFilter.value) {
                     page.value++
                     headerStore.fetchGamesByFilter(currentPlatformQuery.value)
+                    if (isGridActive) {
+                        handleGrid()
+                    }
                 }
             })
         },
@@ -66,63 +201,47 @@ onMounted(() => {
         loadBtnObserver.unobserve(loadBtn)
     }
 })
-
-// Rendering grid
-const gamesContainerWidth = ref()
-const colCount = ref(null)
-const gamesList1 = ref([])
-const gamesList2 = ref([])
-const gamesList3 = ref([])
-const gamesList4 = ref([])
-
-const getWrapperWidth = () => {
-    if (isDesktopView.value && isGridActive) {
-        const gamesWrapper = document.querySelector('.games-wrapper')
-        if (gamesWrapper) {
-            gamesContainerWidth.value = gamesWrapper.clientWidth
-        }
-    }
-}
-
-const gridColCount = () => {
-    if (gamesContainerWidth.value <= 880) {
-        colCount.value = 2
-    } else if (880 < gamesContainerWidth.value <= 1180) {
-        colCount.value = 3
-    } else if (1180 < gamesContainerWidth.value <= 1480) {
-        colCount.value = 4
-    } else {
-        colCount.value = 5
-    }
-}
-
-const gridRender = () => {
-    currentlyDisplayedGames.value.forEach((game) => {
-        if (colCount.value === 2) {
-            //
-        }
-    })
-}
-
-const handleGrid = () => {
-    getWrapperWidth()
-    gridColCount()
-}
-
-onMounted(() => {
-    window.addEventListener('resize', handleGrid)
-})
 </script>
 
 <template>
     <div class="games-wrapper">
         <div v-if="isDesktopView">
             <div class="desktop-view-grid" v-if="isGridActive">
-                <PreviewTileGrid
-                    v-for="game in currentlyDisplayedGames"
-                    :key="game.id"
-                    :game="game"
-                />
+                <div>
+                    <PreviewTileGrid
+                        v-for="game in gridGameLists.gamesListCol1"
+                        :key="game.id"
+                        :game="game"
+                    />
+                </div>
+                <div>
+                    <PreviewTileGrid
+                        v-for="game in gridGameLists.gamesListCol2"
+                        :key="game.id"
+                        :game="game"
+                    />
+                </div>
+                <div v-if="colCount > 2">
+                    <PreviewTileGrid
+                        v-for="game in gridGameLists.gamesListCol3"
+                        :key="game.id"
+                        :game="game"
+                    />
+                </div>
+                <div v-if="colCount > 3">
+                    <PreviewTileGrid
+                        v-for="game in gridGameLists.gamesListCol4"
+                        :key="game.id"
+                        :game="game"
+                    />
+                </div>
+                <div v-if="colCount > 4">
+                    <PreviewTileGrid
+                        v-for="game in gridGameLists.gamesListCol5"
+                        :key="game.id"
+                        :game="game"
+                    />
+                </div>
             </div>
             <div class="desktop-view-col" v-else>
                 <PreviewTileSingleCol
@@ -159,7 +278,7 @@ onMounted(() => {
 
 .desktop-view-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(28rem, 100%), 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(26rem, 100%), 1fr));
     gap: 2rem;
 }
 </style>

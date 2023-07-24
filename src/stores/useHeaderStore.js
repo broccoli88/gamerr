@@ -25,6 +25,7 @@ export const useHeaderStore = defineStore('headerStore', () => {
     const isFilter = ref(false)
     const currentPlatformQuery = ref('')
     const parentPlatformQuery = ref('/lists/parents')
+    const pending = ref()
 
     const currentlyDisplayedGames = computed(() =>
         !isFilter.value ? allGames.value : filteredGames.value
@@ -113,6 +114,7 @@ export const useHeaderStore = defineStore('headerStore', () => {
     })
 
     const fetchGamesByFilter = async (platformQuery = '') => {
+        pending.value = true
         const currentDate = new Date().toJSON().slice(0, 10)
 
         // selectedPlatformFilter.value
@@ -141,6 +143,8 @@ export const useHeaderStore = defineStore('headerStore', () => {
         data.results.forEach((game) => {
             filteredGames.value.push(game)
         })
+
+        pending.value = false
     }
 
     // Fetching filtered data
@@ -173,6 +177,7 @@ export const useHeaderStore = defineStore('headerStore', () => {
         currentlyDisplayedGames,
         fetchGamesByFilter,
         parentPlatformQuery,
-        currentPlatformQuery
+        currentPlatformQuery,
+        pending
     }
 })

@@ -39,7 +39,10 @@ const changeScreenshot = (currentScreenshot) => {
 
 <template>
     <article class="preview-tile">
-        <figure class="preview-tile__img-container">
+        <figure
+            class="preview-tile__img-container"
+            v-if="gameInfo.short_screenshots !== null && gameInfo.short_screenshots.length > 0"
+        >
             <img
                 :src="game.short_screenshots[screenshotCount].image"
                 alt=""

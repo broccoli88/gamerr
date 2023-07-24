@@ -16,6 +16,12 @@ const openRateGameWindow = () => {
     }
 
     if (isDesktopView.value) {
+        const rateButtons = document.querySelectorAll('.current-rate-btn')
+
+        rateButtons.forEach((btn) => {
+            btn.classList.remove('current-rate-btn')
+        })
+
         rateBtn.value.classList.add('current-rate-btn')
         emits('open-rate-game-window')
     }
@@ -23,8 +29,8 @@ const openRateGameWindow = () => {
 </script>
 
 <template>
-    <button class="btn-rate" ref="rateBtn">
-        <Icon class="rate-icon" icon="mdi:dots-horizontal" @click="openRateGameWindow" />
+    <button class="btn-rate" ref="rateBtn" @click="openRateGameWindow">
+        <Icon class="rate-icon" icon="mdi:dots-horizontal" />
     </button>
 </template>
 
@@ -43,9 +49,21 @@ const openRateGameWindow = () => {
     border: none;
     cursor: pointer;
     position: relative;
+
+    transition: 0.2s all ease-in;
+    &:hover,
+    &:focus {
+        background-color: white;
+        color: black;
+
+        .rate-icon {
+            color: black;
+        }
+    }
 }
 
 .rate-icon {
     font-size: 1.7em;
+    transition: 0.2s all ease-in;
 }
 </style>

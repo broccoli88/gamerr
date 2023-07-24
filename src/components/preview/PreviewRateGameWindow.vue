@@ -1,12 +1,15 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useGeneralStore } from '../../stores/useGeneralStore'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 const generalStore = useGeneralStore()
 const { isDesktopView, isRateGameWindowOpen } = storeToRefs(generalStore)
 
 const emits = defineEmits(['close-rate-game-window'])
+const props = defineProps(['positionX'])
+
+const rateGameWindowPosition = computed(() => props.positionX)
 
 const ratingIcons = ref({
     exceptional: 'twemoji:bullseye',
@@ -68,7 +71,7 @@ onMounted(() => {
 .rate-game-container {
     background-color: hsl(0, 0%, 0%, 0.8);
 
-    position: absolute;
+    position: fixed;
     top: 0;
     right: 0;
     width: 100%;
@@ -80,7 +83,8 @@ onMounted(() => {
     align-items: end;
 
     @include breakpoint {
-        left: 30%;
+        position: absolute;
+        left: v-bind(rateGameWindowPosition);
         top: v-bind(rateGameWrapperHeight);
     }
 }

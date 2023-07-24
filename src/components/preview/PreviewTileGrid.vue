@@ -14,7 +14,7 @@ import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 const generalStore = useGeneralStore()
-const { isDesktopView, isRateGameWindowOpen } = storeToRefs(generalStore)
+const { isDesktopView, isGridActive } = storeToRefs(generalStore)
 
 const props = defineProps(['game'])
 const gameInfo = ref(props.game)
@@ -56,11 +56,27 @@ const changeScreenshot = (currentScreenshot) => {
 
 // Rate game window
 const isTileRateGameWindowOpen = ref(false)
+const lastColRateWindowPositionX = ref()
 
 const openRateGameWindow = () => {
-    if (isDesktopView.value) {
-        isTileRateGameWindowOpen.value = true
+    if (!isDesktopView.value) return
+
+    const containingCol = document.querySelector('.desktop-view-grid').children
+    const lastContainer = containingCol[containingCol.length - 1]
+    const rateButton = document.querySelector('.current-rate-btn')
+
+    if (
+        isGridActive &&
+        lastContainer &&
+        lastContainer.contains(rateButton) &&
+        isTileRateGameWindowOpen.value
+    ) {
+        lastColRateWindowPositionX.value = '5%'
+    } else {
+        lastColRateWindowPositionX.value = '30%'
     }
+
+    isTileRateGameWindowOpen.value = true
 }
 
 const closeRateGameWindow = () => {
@@ -69,15 +85,18 @@ const closeRateGameWindow = () => {
     }
 }
 
+const windowRef = ref()
+
 const handleRateGameWindowClick = (e) => {
-    if (isTileRateGameWindowOpen.value) {
-        const target = e.target
-        const rateGameWindowContainer = document.querySelector('.rate-game-wrapper')
-        const rateButton = document.querySelector('.current-rate-btn')
+    if (!isTileRateGameWindowOpen.value) return
 
-        if (!rateGameWindowContainer.contains(target) && !rateButton.contains(target)) {
-            isTileRateGameWindowOpen.value = false
+    const target = e.target
+    const rateGameWindowContainer = document.querySelector('.rate-game-wrapper')
+    const rateButton = document.querySelector('.current-rate-btn')
 
+    if (!rateGameWindowContainer.contains(target) && !rateButton && !rateButton.contains(target)) {
+        isTileRateGameWindowOpen.value = false
+        if (rateButton) {
             rateButton.classList.remove('current-rate-btn')
         }
     }
@@ -136,11 +155,11 @@ onMounted(() => {
                     <PreviewButtonRate
                         v-show="isExtendedInfoShown"
                         @open-rate-game-window="openRateGameWindow"
-                        ref="button"
                     />
                 </TransitionFade>
                 <PreviewRateGameWindow
-                    ref="rateWindow"
+                    ref="windowRef"
+                    :positionX="lastColRateWindowPositionX"
                     v-if="isTileRateGameWindowOpen"
                     @close-rate-game-window="closeRateGameWindow"
                 />
@@ -178,6 +197,7 @@ onMounted(() => {
     border-radius: 12px;
     background-color: $color-card;
     padding-bottom: 3rem;
+    margin-bottom: 2rem;
     position: relative;
 
     display: flex;
