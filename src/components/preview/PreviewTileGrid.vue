@@ -7,10 +7,10 @@ import PreviewButtonAdd from './PreviewButtonAdd.vue'
 import PreviewButtonGift from './PreviewButtonGift.vue'
 import PreviewButtonRate from './PreviewButtonRate.vue'
 import PreviewButtonShowRelated from './PreviewButtonShowRelated.vue'
-import PreviewRateGameWindow from './PreviewRateGameWindow.vue'
+import PreviewRateGameWindowDessktop from './PreviewRateGameWindowDessktop.vue'
 import TransitionFade from '../../transitions/TransitionFade.vue'
 import { useGeneralStore } from '../../stores/useGeneralStore'
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 const generalStore = useGeneralStore()
@@ -54,161 +54,177 @@ const changeScreenshot = (currentScreenshot) => {
     screenshotCount.value = currentScreenshot
 }
 
-// Rate game window
-const isTileRateGameWindowOpen = ref(false)
-const lastColRateWindowPositionX = ref()
+// Rate Game Window
 
-const openRateGameWindow = () => {
-    if (!isDesktopView.value) return
+const isRateGameDesktopWindowOpen = ref(false)
+const rateGameContainerRef = ref()
+const rateGameWrapperRef = ref()
+const rateButtonRef = ref()
+const previewTileOptionBtnsRef = ref()
+const rateGameWindowPositionX = ref(null)
+const rateGameWindowPositionY = ref(null)
 
-    const containingCol = document.querySelector('.desktop-view-grid').children
-    const lastContainer = containingCol[containingCol.length - 1]
-    const rateButton = document.querySelector('.current-rate-btn')
+const rateGameWindowPosition = () => {
+    rateGameWindowPositionX.value = `${previewTileOptionBtnsRef.value.offsetLeft}px`
+    rateGameWindowPositionY.value = `${previewTileOptionBtnsRef.value.offsetTop}px`
+}
 
+const openRateGameDesktopWindow = () => {
+    // rateGameWindowPosition()
+    isRateGameDesktopWindowOpen.value = true
+}
+
+const closeRateGameDesktopWindow = () => {
+    isRateGameDesktopWindowOpen.value = false
+}
+
+const handleRateGameDesktopWindow = (e) => {
     if (
-        isGridActive &&
-        lastContainer &&
-        lastContainer.contains(rateButton) &&
-        isTileRateGameWindowOpen.value
-    ) {
-        lastColRateWindowPositionX.value = '5%'
-    } else {
-        lastColRateWindowPositionX.value = '30%'
-    }
-
-    isTileRateGameWindowOpen.value = true
-}
-
-const closeRateGameWindow = () => {
-    if (isDesktopView.value) {
-        isTileRateGameWindowOpen.value = false
-    }
-}
-
-const windowRef = ref()
-
-const handleRateGameWindowClick = (e) => {
-    if (!isTileRateGameWindowOpen.value) return
+        !isRateGameDesktopWindowOpen.value &&
+        !rateGameContainerRef.value &&
+        !rateGameWrapperRef.value &&
+        !isDesktopView.value &&
+        rateButtonRef.value
+    )
+        return
 
     const target = e.target
-    const rateGameWindowContainer = document.querySelector('.rate-game-wrapper')
-    const rateButton = document.querySelector('.current-rate-btn')
-
-    if (!rateGameWindowContainer.contains(target) && !rateButton && !rateButton.contains(target)) {
-        isTileRateGameWindowOpen.value = false
-        if (rateButton) {
-            rateButton.classList.remove('current-rate-btn')
-        }
+    if (
+        rateGameWrapperRef.value &&
+        !rateGameWrapperRef.value.contains(target) &&
+        !rateButtonRef.value
+    ) {
+        isRateGameDesktopWindowOpen.value = false
     }
 }
 
 onMounted(() => {
-    window.addEventListener('click', handleRateGameWindowClick)
+    window.addEventListener('click', handleRateGameDesktopWindow)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('click', handleRateGameDesktopWindow)
 })
 </script>
 
 <template>
-    <article class="preview-tile" @mouseover="showExtendedInfo" @mouseleave="hideExtendedInfo">
-        <figure
-            class="preview-tile__img-container"
-            v-if="gameInfo.short_screenshots !== null && gameInfo.short_screenshots.length > 0"
-        >
-            <img
-                :src="gameInfo.short_screenshots[screenshotCount].image"
-                alt=""
-                class="preview-tile__img"
-            />
-            <PreviewScreenshots
-                :screenshots="gameInfo.short_screenshots"
-                :tab="screenshotCount"
-                @change-screenshot="changeScreenshot"
-            />
-        </figure>
-        <div class="preview-tile__content">
-            <section class="preview-tile__platforms">
-                <PreviewPlatformIcon
-                    v-for="platform in reducedPlatform"
-                    :key="platform.platform.id"
-                    :platform="platform.platform"
+    <div class="preview-tile-wrapper" @mouseover="showExtendedInfo" @mouseleave="hideExtendedInfo">
+        <article class="preview-tile">
+            <figure
+                class="preview-tile__img-container"
+                v-if="gameInfo.short_screenshots !== null && gameInfo.short_screenshots.length > 0"
+            >
+                <img
+                    :src="gameInfo.short_screenshots[screenshotCount].image"
+                    alt=""
+                    class="preview-tile__img"
                 />
-                <span v-if="gameInfo.parent_platforms.length > 4">+{{ additionalPlatforms }}</span>
-                <div class="preview-tile_metascore">
-                    <PreviewMetaScoreIcon
-                        :score="gameInfo.metacritic"
-                        v-if="gameInfo.metacritic !== null"
-                    />
-                </div>
-            </section>
-            <section class="preview-tile__title-wrapper">
-                <router-link to="#" class="preview-tile__title">
-                    <p>{{ gameTitle }}</p>
-                    <PreviewRating :ratings="gameInfo.ratings" v-if="gameInfo.ratings.length > 0" />
-                </router-link>
-            </section>
-            <section class="preview-tile__option-btns">
-                <PreviewButtonAdd :suggestions="gameInfo.added" />
-                <TransitionFade>
-                    <PreviewButtonGift v-if="isExtendedInfoShown" />
-                </TransitionFade>
-
-                <TransitionFade>
-                    <PreviewButtonRate
-                        v-show="isExtendedInfoShown"
-                        @open-rate-game-window="openRateGameWindow"
-                    />
-                </TransitionFade>
-                <PreviewRateGameWindow
-                    ref="windowRef"
-                    :positionX="lastColRateWindowPositionX"
-                    v-if="isTileRateGameWindowOpen"
-                    @close-rate-game-window="closeRateGameWindow"
+                <PreviewScreenshots
+                    :screenshots="gameInfo.short_screenshots"
+                    :tab="screenshotCount"
+                    @change-screenshot="changeScreenshot"
                 />
-            </section>
-        </div>
-
-        <TransitionFade>
-            <section class="preview-tile__extended-description" v-if="isExtendedInfoShown">
-                <div class="preview-tile__extended-row-wrapper">
-                    <div class="preview-tile__extended-row">
-                        <p>Release date:</p>
-                        <p>{{ gameInfo.released }}</p>
+            </figure>
+            <div class="preview-tile__content">
+                <section class="preview-tile__platforms">
+                    <PreviewPlatformIcon
+                        v-for="platform in reducedPlatform"
+                        :key="platform.platform.id"
+                        :platform="platform.platform"
+                    />
+                    <span v-if="gameInfo.parent_platforms.length > 4"
+                        >+{{ additionalPlatforms }}</span
+                    >
+                    <div class="preview-tile_metascore">
+                        <PreviewMetaScoreIcon
+                            :score="gameInfo.metacritic"
+                            v-if="gameInfo.metacritic !== null"
+                        />
                     </div>
-                    <div class="preview-tile__extended-row">
-                        <p>Genres:</p>
-                        <div class="preview-tile__extended-row-genre-wrapper">
-                            <router-link to="#" v-for="genre in gameInfo.genres" :key="genre.id">
-                                {{ genre.name }}</router-link
-                            >
+                </section>
+                <section class="preview-tile__title-wrapper">
+                    <router-link to="#" class="preview-tile__title">
+                        <p>{{ gameTitle }}</p>
+                        <PreviewRating
+                            :ratings="gameInfo.ratings"
+                            v-if="gameInfo.ratings.length > 0"
+                        />
+                    </router-link>
+                </section>
+                <section class="preview-tile__option-btns" ref="previewTileOptionBtnsRef">
+                    <PreviewButtonAdd :suggestions="gameInfo.added" />
+                    <TransitionFade>
+                        <PreviewButtonGift v-if="isExtendedInfoShown" />
+                    </TransitionFade>
+                    <TransitionFade>
+                        <div v-if="isExtendedInfoShown" ref="rateButtonRef">
+                            <PreviewButtonRate
+                                @open-desktop-rate-game-window="openRateGameDesktopWindow"
+                            />
+                        </div>
+                    </TransitionFade>
+                </section>
+            </div>
+            <TransitionFade>
+                <section class="preview-tile__extended-description" v-if="isExtendedInfoShown">
+                    <div class="preview-tile__extended-row-wrapper">
+                        <div class="preview-tile__extended-row">
+                            <p>Release date:</p>
+                            <p>{{ gameInfo.released }}</p>
+                        </div>
+                        <div class="preview-tile__extended-row">
+                            <p>Genres:</p>
+                            <div class="preview-tile__extended-row-genre-wrapper">
+                                <router-link
+                                    to="#"
+                                    v-for="genre in gameInfo.genres"
+                                    :key="genre.id"
+                                >
+                                    {{ genre.name }}</router-link
+                                >
+                            </div>
+                        </div>
+                        <div class="preview-tile__extended-row">
+                            <p>Chart:</p>
+                            <router-link to="#">Dec 31, 2023</router-link>
                         </div>
                     </div>
-                    <div class="preview-tile__extended-row">
-                        <p>Chart:</p>
-                        <router-link to="#">Dec 31, 2023</router-link>
-                    </div>
+                    <PreviewButtonShowRelated />
+                </section>
+            </TransitionFade>
+        </article>
+
+        <TransitionFade>
+            <div
+                v-if="isRateGameDesktopWindowOpen"
+                class="rate-game-container"
+                ref="rateGameContainerRef"
+            >
+                <div ref="rateGameWrapperRef">
+                    <PreviewRateGameWindowDessktop
+                        @close-rate-game-desktop-window="closeRateGameDesktopWindow"
+                    />
                 </div>
-                <PreviewButtonShowRelated />
-            </section>
+            </div>
         </TransitionFade>
-    </article>
+    </div>
 </template>
 
 <style lang="scss" scoped>
+.preview-tile-wrapper {
+    margin-bottom: 2rem;
+    position: relative;
+}
+
 .preview-tile {
     border-radius: 12px;
     background-color: $color-card;
     padding-bottom: 3rem;
-    margin-bottom: 2rem;
-    position: relative;
 
     display: flex;
     flex-direction: column;
     height: max-content;
     transition: transform 0.2s ease-in;
-
-    &:hover {
-        transform: scale(1.03);
-        z-index: 9;
-    }
 }
 
 .preview-tile__content {
@@ -295,7 +311,7 @@ onMounted(() => {
     top: calc(100% - 3rem);
     left: 0;
     width: 100%;
-    z-index: 9;
+    z-index: 98;
 }
 
 .preview-tile__extended-row-wrapper {
@@ -327,5 +343,17 @@ onMounted(() => {
         display: flex;
         gap: 0.3rem;
     }
+}
+
+.rate-game-container {
+    position: absolute;
+    top: calc(v-bind(rateGameWindowPositionY) - 1.5rem);
+    left: calc(v-bind(rateGameWindowPositionX) + 35%);
+
+    z-index: 99;
+
+    display: grid;
+    justify-content: end;
+    align-items: end;
 }
 </style>

@@ -1,15 +1,12 @@
 <script setup>
 import { storeToRefs } from 'pinia'
 import { useGeneralStore } from '../../stores/useGeneralStore'
-import { computed, onMounted, ref } from 'vue'
+import { ref } from 'vue'
 
 const generalStore = useGeneralStore()
-const { isDesktopView, isRateGameWindowOpen } = storeToRefs(generalStore)
+const { isDesktopView } = storeToRefs(generalStore)
 
-const emits = defineEmits(['close-rate-game-window'])
-const props = defineProps(['positionX'])
-
-const rateGameWindowPosition = computed(() => props.positionX)
+const emits = defineEmits(['close-rate-game-desktop-window'])
 
 const ratingIcons = ref({
     exceptional: 'twemoji:bullseye',
@@ -18,77 +15,41 @@ const ratingIcons = ref({
     skip: 'fluent-emoji-flat:stop-sign'
 })
 
-const rateGameWrapper = ref()
-const rateGameWrapperHeight = ref()
-
-const closeRateGameWindow = () => {
-    if (!isDesktopView.value) {
-        isRateGameWindowOpen.value = false
-    }
-
+const emitCloseRateGameWindow = () => {
     if (isDesktopView.value) {
-        emits('close-rate-game-window')
+        emits('close-rate-game-desktop-window')
     }
 }
-
-onMounted(() => {
-    if (isDesktopView) {
-        rateGameWrapperHeight.value = `calc(${rateGameWrapper.value.clientHeight}px - 1.7em - 1.6rem)`
-    }
-})
 </script>
 
 <template>
-    <div class="rate-game-container">
-        <div class="rate-game-wrapper" ref="rateGameWrapper">
-            <div class="rate-game">
-                <p>Rate in one click</p>
-                <section class="rate-game__icons">
-                    <div
-                        v-for="(value, key) in ratingIcons"
-                        :key="key"
-                        class="rate-game__icon-container"
-                        @click="closeRateGameWindow"
-                    >
-                        <Icon :icon="value" class="rate-game__icon" />
-                        <p>{{ key }}</p>
-                    </div>
-                </section>
-            </div>
-            <div class="rate-game__btns">
-                <button class="rate-game__btn-review">Write a review</button>
-                <div class="btn-wrapper">
-                    <button class="rate-game__btn-collection" @click="closeRateGameWindow">
-                        Add to collection
-                    </button>
+    <div class="rate-game-wrapper">
+        <div class="rate-game">
+            <p>Rate in one click</p>
+            <section class="rate-game__icons">
+                <div
+                    v-for="(value, key) in ratingIcons"
+                    :key="key"
+                    class="rate-game__icon-container"
+                    @click="emitCloseRateGameWindow"
+                >
+                    <Icon :icon="value" class="rate-game__icon" />
+                    <p>{{ key }}</p>
                 </div>
+            </section>
+        </div>
+        <div class="rate-game__btns">
+            <button class="rate-game__btn-review">Write a review</button>
+            <div class="btn-wrapper">
+                <button class="rate-game__btn-collection" @click="emitCloseRateGameWindow">
+                    Add to collection
+                </button>
             </div>
         </div>
     </div>
 </template>
 
 <style lang="scss" scoped>
-.rate-game-container {
-    background-color: hsl(0, 0%, 0%, 0.8);
-
-    position: fixed;
-    top: 0;
-    right: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 99;
-
-    display: grid;
-    justify-content: end;
-    align-items: end;
-
-    @include breakpoint {
-        position: absolute;
-        left: v-bind(rateGameWindowPosition);
-        top: v-bind(rateGameWrapperHeight);
-    }
-}
-
 .rate-game-wrapper {
     background-color: white;
     width: 25rem;

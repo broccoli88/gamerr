@@ -14,13 +14,13 @@ export const useGeneralStore = defineStore('generalStore', () => {
         }
     }
 
-    const isRateGameWindowOpen = ref(false)
+    const isRateGameMobileWindowOpen = ref(false)
 
     return {
         isSidebarMobileMenuOpen,
         isDesktopView,
         checkWindowWidth,
         isGridActive,
-        isRateGameWindowOpen
+        isRateGameMobileWindowOpen
     }
 })
