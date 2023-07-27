@@ -14,7 +14,7 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 
 const generalStore = useGeneralStore()
-const { isDesktopView, isGridActive } = storeToRefs(generalStore)
+const { isDesktopView } = storeToRefs(generalStore)
 
 const props = defineProps(['game'])
 const gameInfo = ref(props.game)
@@ -61,16 +61,28 @@ const rateGameContainerRef = ref()
 const rateGameWrapperRef = ref()
 const rateButtonRef = ref()
 const previewTileOptionBtnsRef = ref()
+const previewTileWrapperRef = ref()
 const rateGameWindowPositionX = ref(null)
 const rateGameWindowPositionY = ref(null)
 
 const rateGameWindowPosition = () => {
-    rateGameWindowPositionX.value = `${previewTileOptionBtnsRef.value.offsetLeft}px`
-    rateGameWindowPositionY.value = `${previewTileOptionBtnsRef.value.offsetTop}px`
+    const lastCols = document.querySelector('.desktop-view-grid').children
+    const lastCol = lastCols[lastCols.length - 1]
+
+    if (!lastCol.contains(previewTileWrapperRef.value)) {
+        rateGameWindowPositionX.value = `${previewTileOptionBtnsRef.value.offsetLeft}px`
+        rateGameWindowPositionY.value = `${previewTileOptionBtnsRef.value.offsetTop}px`
+        return
+    }
+
+    if (lastCol.contains(previewTileWrapperRef.value)) {
+        rateGameWindowPositionX.value = `-26%`
+        rateGameWindowPositionY.value = `${previewTileOptionBtnsRef.value.offsetTop}px`
+    }
 }
 
 const openRateGameDesktopWindow = () => {
-    // rateGameWindowPosition()
+    rateGameWindowPosition()
     isRateGameDesktopWindowOpen.value = true
 }
 
@@ -79,20 +91,20 @@ const closeRateGameDesktopWindow = () => {
 }
 
 const handleRateGameDesktopWindow = (e) => {
+    const target = e.target
     if (
         !isRateGameDesktopWindowOpen.value &&
         !rateGameContainerRef.value &&
         !rateGameWrapperRef.value &&
         !isDesktopView.value &&
-        rateButtonRef.value
+        rateButtonRef.value.contains(target)
     )
         return
 
-    const target = e.target
     if (
         rateGameWrapperRef.value &&
         !rateGameWrapperRef.value.contains(target) &&
-        !rateButtonRef.value
+        (!rateButtonRef.value || !rateButtonRef.value.contains(target))
     ) {
         isRateGameDesktopWindowOpen.value = false
     }
@@ -108,7 +120,12 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="preview-tile-wrapper" @mouseover="showExtendedInfo" @mouseleave="hideExtendedInfo">
+    <div
+        class="preview-tile-wrapper"
+        @mouseover="showExtendedInfo"
+        @mouseleave="hideExtendedInfo"
+        ref="previewTileWrapperRef"
+    >
         <article class="preview-tile">
             <figure
                 class="preview-tile__img-container"
@@ -165,34 +182,30 @@ onUnmounted(() => {
                     </TransitionFade>
                 </section>
             </div>
-            <TransitionFade>
-                <section class="preview-tile__extended-description" v-if="isExtendedInfoShown">
-                    <div class="preview-tile__extended-row-wrapper">
-                        <div class="preview-tile__extended-row">
-                            <p>Release date:</p>
-                            <p>{{ gameInfo.released }}</p>
-                        </div>
-                        <div class="preview-tile__extended-row">
-                            <p>Genres:</p>
-                            <div class="preview-tile__extended-row-genre-wrapper">
-                                <router-link
-                                    to="#"
-                                    v-for="genre in gameInfo.genres"
-                                    :key="genre.id"
-                                >
-                                    {{ genre.name }}</router-link
-                                >
-                            </div>
-                        </div>
-                        <div class="preview-tile__extended-row">
-                            <p>Chart:</p>
-                            <router-link to="#">Dec 31, 2023</router-link>
+        </article>
+        <TransitionFade>
+            <section class="preview-tile__extended-description" v-if="isExtendedInfoShown">
+                <div class="preview-tile__extended-row-wrapper">
+                    <div class="preview-tile__extended-row">
+                        <p>Release date:</p>
+                        <p>{{ gameInfo.released }}</p>
+                    </div>
+                    <div class="preview-tile__extended-row">
+                        <p>Genres:</p>
+                        <div class="preview-tile__extended-row-genre-wrapper">
+                            <router-link to="#" v-for="genre in gameInfo.genres" :key="genre.id">
+                                {{ genre.name }}</router-link
+                            >
                         </div>
                     </div>
-                    <PreviewButtonShowRelated />
-                </section>
-            </TransitionFade>
-        </article>
+                    <div class="preview-tile__extended-row">
+                        <p>Chart:</p>
+                        <router-link to="#">Dec 31, 2023</router-link>
+                    </div>
+                </div>
+                <PreviewButtonShowRelated />
+            </section>
+        </TransitionFade>
 
         <TransitionFade>
             <div
@@ -214,6 +227,13 @@ onUnmounted(() => {
 .preview-tile-wrapper {
     margin-bottom: 2rem;
     position: relative;
+
+    &:hover {
+        .preview-tile,
+        .preview-tile__extended-description {
+            transform: scale(1.03);
+        }
+    }
 }
 
 .preview-tile {
@@ -355,5 +375,9 @@ onUnmounted(() => {
     display: grid;
     justify-content: end;
     align-items: end;
+}
+
+.fade-leave-active {
+    transition: none;
 }
 </style>
