@@ -1,10 +1,28 @@
+<script setup>
+import { storeToRefs } from 'pinia'
+import { useGeneralStore } from '../../stores/useGeneralStore'
+
+const generalStore = useGeneralStore()
+const { isRateGameMobileWindowOpen, isDesktopView } = storeToRefs(generalStore)
+
+const emits = defineEmits(['open-desktop-rate-game-window'])
+
+const openRateGameWindow = () => {
+    if (!isDesktopView.value) {
+        isRateGameMobileWindowOpen.value = true
+    }
+
+    if (isDesktopView.value) {
+        emits('open-desktop-rate-game-window')
+    }
+}
+</script>
+
 <template>
-    <button class="btn-rate">
+    <button class="btn-rate" @click="openRateGameWindow">
         <Icon class="rate-icon" icon="mdi:dots-horizontal" />
     </button>
 </template>
-
-<script setup></script>
 
 <style lang="scss" scoped>
 .btn-rate {
@@ -20,9 +38,22 @@
 
     border: none;
     cursor: pointer;
+    position: relative;
+
+    transition: 0.2s all ease-in;
+    &:hover,
+    &:focus {
+        background-color: white;
+        color: black;
+
+        .rate-icon {
+            color: black;
+        }
+    }
 }
 
 .rate-icon {
     font-size: 1.7em;
+    transition: 0.2s all ease-in;
 }
 </style>

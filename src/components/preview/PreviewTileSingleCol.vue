@@ -7,9 +7,17 @@ import PreviewButtonAdd from './PreviewButtonAdd.vue'
 import PreviewButtonGift from './PreviewButtonGift.vue'
 import PreviewButtonRate from './PreviewButtonRate.vue'
 import PreviewButtonShowRelated from './PreviewButtonShowRelated.vue'
+import PreviewRateGameWindowDessktop from './PreviewRateGameWindowDessktop.vue'
+import TransitionFade from '../../transitions/TransitionFade.vue'
+import { useGeneralStore } from '../../stores/useGeneralStore'
+import { storeToRefs } from 'pinia'
+import { computed, ref, onMounted, onUnmounted } from 'vue'
 
-import { computed, ref } from 'vue'
 const props = defineProps(['game'])
+const gameInfo = ref(props.game)
+
+const generalStore = useGeneralStore()
+const { isDesktopView } = storeToRefs(generalStore)
 
 const reducedPlatform = computed(() =>
     props.game.parent_platforms.length > 4
@@ -21,17 +29,88 @@ const additionalPlatforms = computed(() =>
     props.game.parent_platforms.length > 4 ? props.game.parent_platforms.length - 3 : 0
 )
 
+const regEx = /^[a-zA-Z0-9.,!?@#$%^&*()_+{}[\]:;<=>/'"\\|~` \t:-]+$/
+const checkGameName = regEx.test(gameInfo.value.name)
+
+const gameTitle = computed(() =>
+    checkGameName ? gameInfo.value.name : gameInfo.value.slug.split('-').join(' ')
+)
+
 // Current game screenshot
 
 const screenshotCount = ref(0)
 const changeScreenshot = (currentScreenshot) => {
     screenshotCount.value = currentScreenshot
 }
+
+// Rate game window
+
+const areButtonsVisible = ref(false)
+const isRateGameDesktopWindowOpen = ref(false)
+const rateGameWindowPositionX = ref(null)
+const rateGameWindowPositionY = ref(null)
+const rateGameContainerRef = ref()
+const rateGameWrapperRef = ref()
+const previewTileOptionBtnsRef = ref()
+const rateButtonRef = ref()
+
+const showButtons = () => {
+    areButtonsVisible.value = true
+}
+
+const hideButtons = () => {
+    areButtonsVisible.value = false
+}
+
+const rateGameWindowPosition = () => {
+    rateGameWindowPositionX.value = `${previewTileOptionBtnsRef.value.offsetLeft}px`
+    rateGameWindowPositionY.value = `${previewTileOptionBtnsRef.value.offsetTop}px`
+}
+
+const openDesktopRateGameWindow = () => {
+    rateGameWindowPosition()
+    isRateGameDesktopWindowOpen.value = true
+}
+
+const closeRateGameDesktopWindow = () => {
+    isRateGameDesktopWindowOpen.value = false
+}
+
+const handleRateGameDesktopWindow = (e) => {
+    const target = e.target
+    if (
+        !isRateGameDesktopWindowOpen.value &&
+        !rateGameContainerRef.value &&
+        !rateGameWrapperRef.value &&
+        !isDesktopView.value &&
+        rateButtonRef.value.contains(target)
+    )
+        return
+
+    if (
+        rateGameWrapperRef.value &&
+        !rateGameWrapperRef.value.contains(target) &&
+        (!rateButtonRef.value || !rateButtonRef.value.contains(target))
+    ) {
+        isRateGameDesktopWindowOpen.value = false
+    }
+}
+
+onMounted(() => {
+    window.addEventListener('click', handleRateGameDesktopWindow)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('click', handleRateGameDesktopWindow)
+})
 </script>
 
 <template>
     <article class="preview-tile">
-        <figure class="preview-tile__img-container">
+        <figure
+            class="preview-tile__img-container"
+            v-if="gameInfo.short_screenshots !== null && gameInfo.short_screenshots.length > 0"
+        >
             <img
                 :src="game.short_screenshots[screenshotCount].image"
                 alt=""
@@ -41,9 +120,10 @@ const changeScreenshot = (currentScreenshot) => {
                 :screenshots="game.short_screenshots"
                 :tab="screenshotCount"
                 @change-screenshot="changeScreenshot"
+                v-if="game.short_screenshots.length > 0"
             />
         </figure>
-        <div class="preview-tile__content">
+        <div class="preview-tile__content" @mouseover="showButtons" @mouseleave="hideButtons">
             <section class="preview-tile__platforms">
                 <PreviewPlatformIcon
                     v-for="platform in reducedPlatform"
@@ -54,16 +134,24 @@ const changeScreenshot = (currentScreenshot) => {
             </section>
             <section class="preview-tile__title-wrapper">
                 <router-link to="#" class="preview-tile__title">
-                    <p>{{ game.name }}</p>
+                    <p>{{ gameTitle }}</p>
 
-                    <PreviewRating :ratings="game.ratings" />
+                    <PreviewRating :ratings="game.ratings" v-if="game.ratings.length > 0" />
                 </router-link>
                 <PreviewButtonShowRelated />
             </section>
-            <section class="preview-tile__option-btns">
+            <section class="preview-tile__option-btns" ref="previewTileOptionBtnsRef">
                 <PreviewButtonAdd :suggestions="game.added" />
-                <PreviewButtonGift />
-                <PreviewButtonRate />
+                <TransitionFade>
+                    <PreviewButtonGift v-if="areButtonsVisible" />
+                </TransitionFade>
+                <TransitionFade>
+                    <div v-if="areButtonsVisible" ref="rateButtonRef">
+                        <PreviewButtonRate
+                            @open-desktop-rate-game-window="openDesktopRateGameWindow"
+                        />
+                    </div>
+                </TransitionFade>
             </section>
             <div class="preview-tile__extended-row-wrapper">
                 <div class="preview-tile__extended-row">
@@ -88,6 +176,19 @@ const changeScreenshot = (currentScreenshot) => {
                 </div>
             </div>
         </div>
+        <TransitionFade>
+            <div
+                v-if="isRateGameDesktopWindowOpen"
+                class="rate-game-container"
+                ref="rateGameContainerRef"
+            >
+                <div ref="rateGameWrapperRef">
+                    <PreviewRateGameWindowDessktop
+                        @close-rate-game-desktop-window="closeRateGameDesktopWindow"
+                    />
+                </div>
+            </div>
+        </TransitionFade>
     </article>
 </template>
 
@@ -217,5 +318,17 @@ const changeScreenshot = (currentScreenshot) => {
         display: flex;
         gap: 0.3rem;
     }
+}
+
+.rate-game-container {
+    position: absolute;
+    top: calc(v-bind(rateGameWindowPositionY) - 1.5rem);
+    left: calc(v-bind(rateGameWindowPositionX) + 15%);
+
+    z-index: 99;
+
+    display: grid;
+    justify-content: end;
+    align-items: end;
 }
 </style>

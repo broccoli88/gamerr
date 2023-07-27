@@ -5,46 +5,31 @@ import HeaderDesktopFilterList from './header/HeaderDesktopFilterList.vue'
 import { useHeaderStore } from '../stores/useHeaderStore'
 import { useGeneralStore } from '../stores/useGeneralStore'
 import { storeToRefs } from 'pinia'
-import { useFetchGames } from '../modules/useFetchGames'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const generalStore = useGeneralStore()
-const { isDesktopView, isGridActive, page, filteredGames, isFilter } = storeToRefs(generalStore)
+const { isDesktopView, isGridActive } = storeToRefs(generalStore)
 const headerStore = useHeaderStore()
 const {
     orderBy,
+    orderByFilter,
     platforms,
     selectedPlatformFilter,
     currentPlatformTypeFilter,
     currentPlatformTypeParent,
     currentPlatformFilters,
     isPlatformFilterSubListOpen,
-    isPlatformFilterListOpen
+    isPlatformFilterListOpen,
+    filteredGames,
+    page,
+    isFilter,
+    parentPlatformQuery,
+    currentPlatformQuery
 } = storeToRefs(headerStore)
 
 //...::: [ Order by filtering ] :::...
 
-const orderByFilter = ref('')
 const isOrderByFilterListOpen = ref(false)
-
-const filterOption = computed(() => {
-    switch (orderByFilter.value.toLowerCase()) {
-        case 'relevance':
-            return 'ordering=-updated'
-        case 'date added':
-            return 'ordering=-added'
-        case 'name':
-            return 'ordering=-name'
-        case 'release date':
-            return 'ordering=-released'
-        case 'popularity':
-            return 'ordering=-added'
-        case 'average rating':
-            return 'ordering=-rating'
-        default:
-            return 'ordering=-metacritic'
-    }
-})
 
 const openOrderByFilterList = () => {
     const orderByHeaderFiltering = document.querySelector('.orderby-header-filtering')
@@ -59,9 +44,6 @@ const closeOrderByFilterList = () => {
 
 const selectOrderByFilter = async (filter) => {
     orderByFilter.value = null
-    isFilter.value = true
-    filteredGames.value = []
-    page.value = 1
 
     orderByFilter.value = filter.name
     filter.selected = true
@@ -71,14 +53,11 @@ const selectOrderByFilter = async (filter) => {
             orderType.selected = false
         }
     })
+    filteredGames.value = []
+    isFilter.value = true
+    page.value = 1
 
-    const includedPlatforms = ref(`parent_platforms=1`)
-    const query = ref(`${filterOption.value}&page=${page.value}&${includedPlatforms.value}`)
-    const data = await useFetchGames(query.value)
-
-    data.results.forEach((game) => {
-        filteredGames.value.push(game)
-    })
+    await headerStore.fetchGamesByFilter()
 
     setTimeout(() => {
         closeOrderByFilterList()
@@ -119,13 +98,18 @@ const openPlatformFilterList = () => {
     isPlatformFilterListOpen.value = !isPlatformFilterListOpen.value
 }
 
-const selectPlatformFilter = (filter) => {
+const selectPlatformFilter = async (filter) => {
     // Selecting platform without additional types
 
     if (!filter.type && !isPlatformFilterSubListOpen.value) {
         headerStore.clearPlatformSelection(filter)
         filter.selected = true
         selectedPlatformFilter.value = filter.name
+        currentPlatformQuery.value = parentPlatformQuery.value
+        filteredGames.value = []
+        isFilter.value = true
+        page.value = 1
+        await headerStore.fetchGamesByFilter(parentPlatformQuery.value)
 
         setTimeout(() => {
             headerStore.closePlatformFilterList()
@@ -153,6 +137,11 @@ const selectPlatformFilter = (filter) => {
                 platform.selected = true
             }
         })
+        filteredGames.value = []
+        isFilter.value = true
+        page.value = 1
+        currentPlatformQuery.value = ''
+        await headerStore.fetchGamesByFilter()
 
         setTimeout(() => {
             headerStore.closePlatformFilterList()

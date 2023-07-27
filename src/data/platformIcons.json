@@ -18,5 +18,6 @@
     { "title": "Apple Macintosh", "icon": "mdi:web", "link": "#" },
     { "title": "Atari", "icon": "simple-icons:atari", "link": "#" },
     { "title": "SEGA", "icon": "simple-icons:sega", "link": "#" },
+    { "title": "Commodore / Amiga", "icon": "simple-icons:commodore", "link": "#" },
     { "title": "3DO", "icon": "fxemoji:notchedrightsemi3dot", "link": "#" }
 ]
