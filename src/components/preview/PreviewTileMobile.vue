@@ -7,7 +7,6 @@ import PreviewButtonAdd from './PreviewButtonAdd.vue'
 import PreviewButtonGift from './PreviewButtonGift.vue'
 import PreviewButtonRate from './PreviewButtonRate.vue'
 import PreviewButtonShowRelated from './PreviewButtonShowRelated.vue'
-
 import { computed, ref } from 'vue'
 
 const props = defineProps(['game'])
@@ -74,7 +73,10 @@ const changeScreenshot = () => {
                 </div>
             </section>
             <section class="preview-tile__title-wrapper">
-                <router-link to="#" class="preview-tile__title">
+                <router-link
+                    :to="{ name: 'games', params: { slug: props.game.slug } }"
+                    class="preview-tile__title"
+                >
                     <p>{{ gameTitle }}</p>
                     <PreviewRating :ratings="game.ratings" v-if="game.ratings.length > 0" />
                 </router-link>

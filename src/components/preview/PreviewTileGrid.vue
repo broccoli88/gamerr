@@ -160,7 +160,7 @@ onUnmounted(() => {
                     </div>
                 </section>
                 <section class="preview-tile__title-wrapper">
-                    <router-link to="#" class="preview-tile__title">
+                    <router-link to="/games" class="preview-tile__title">
                         <p>{{ gameTitle }}</p>
                         <PreviewRating
                             :ratings="gameInfo.ratings"

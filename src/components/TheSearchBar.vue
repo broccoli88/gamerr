@@ -54,7 +54,7 @@ onUnmounted(() => {
     <header class="navbar">
         <div class="navbar__content">
             <div>
-                <router-link to="#" class="logo">RAWG</router-link>
+                <router-link to="/" class="logo">RAWG</router-link>
             </div>
             <div class="navbar__rate-btn">
                 <ButtonRateGame />

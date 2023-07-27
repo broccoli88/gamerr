@@ -133,7 +133,7 @@ onUnmounted(() => {
                 <span v-if="game.parent_platforms.length > 4">+{{ additionalPlatforms }}</span>
             </section>
             <section class="preview-tile__title-wrapper">
-                <router-link to="#" class="preview-tile__title">
+                <router-link to="/games" class="preview-tile__title">
                     <p>{{ gameTitle }}</p>
 
                     <PreviewRating :ratings="game.ratings" v-if="game.ratings.length > 0" />

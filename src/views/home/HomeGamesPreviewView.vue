@@ -7,7 +7,7 @@ import { useFetchGames } from '../../modules/useFetchGames'
 import { useGeneralStore } from '../../stores/useGeneralStore'
 import { useHeaderStore } from '../../stores/useHeaderStore'
 import { storeToRefs } from 'pinia'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 
 const generalStore = useGeneralStore()
 const { isDesktopView, isGridActive } = storeToRefs(generalStore)
@@ -162,6 +162,8 @@ watch(pending, () => {
     handleGrid()
 })
 
+let loadBtnObserver
+
 onMounted(async () => {
     window.addEventListener('resize', () => {
         getWrapperWidth()
@@ -172,7 +174,7 @@ onMounted(async () => {
     gridColCount()
 
     const loadBtn = document.querySelector('.load-btn')
-    const loadBtnObserver = new IntersectionObserver(
+    loadBtnObserver = new IntersectionObserver(
         (entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting && allGames.value.length > 0 && !isFilter.value) {
@@ -199,6 +201,12 @@ onMounted(async () => {
         loadBtnObserver.observe(loadBtn)
     } else {
         loadBtnObserver.unobserve(loadBtn)
+    }
+})
+
+onUnmounted(() => {
+    if (loadBtnObserver) {
+        loadBtnObserver.disconnect()
     }
 })
 </script>
