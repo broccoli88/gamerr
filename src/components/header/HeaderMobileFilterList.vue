@@ -37,7 +37,7 @@ const emitSelectFilter = (filter) => {
 
 <style lang="scss" scoped>
 .filtering__list-container {
-    position: absolute;
+    position: fixed;
     inset: 0;
     z-index: 9;
     background-color: $color-black-09;

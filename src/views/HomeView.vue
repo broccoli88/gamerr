@@ -2,46 +2,40 @@
 import TheSearchBar from '../components/TheSearchBar.vue'
 import TheSideBar from '../components/TheSideBar.vue'
 import TheHeader from '../components/TheHeader.vue'
-import { RouterView, useRoute } from 'vue-router'
-import { watch, ref } from 'vue'
+import { useGeneralStore } from '../stores/useGeneralStore'
+import { RouterView } from 'vue-router'
+import { storeToRefs } from 'pinia'
 
-const route = useRoute()
-const displayHeader = ref(true)
-
-watch(
-    () => route.fullPath,
-    () => {
-        if (route.fullPath.includes('/game')) {
-            displayHeader.value = false
-        } else {
-            displayHeader.value = true
-        }
-    }
-)
+const generalStore = useGeneralStore()
+const { isDesktopView, isGameDetailsOn, isHeader, isSideBar } = storeToRefs(generalStore)
 </script>
 
 <template>
     <header>
         <TheSearchBar />
     </header>
-    <main>
-        <TheSideBar />
-        <section class="main-section">
-            <TheHeader v-if="displayHeader" />
-            <RouterView />
+    <main class="main-view">
+        <TheSideBar v-if="!isGameDetailsOn" />
+        <section>
+            <TheHeader v-if="!isGameDetailsOn" />
+            <Suspense>
+                <RouterView />
+            </Suspense>
         </section>
     </main>
 </template>
 
 <style lang="scss" scoped>
-main {
+.main-view {
     @include breakpoint {
         display: grid;
         grid-template-columns: auto 1fr;
     }
 }
-
-.main-section {
-    padding: 1rem;
+.game-details {
+    @include breakpoint {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
 }
 </style>

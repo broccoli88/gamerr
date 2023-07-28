@@ -324,6 +324,7 @@ const activateGrid = () => {
 .header {
     font-weight: 300;
     font-size: 1.5rem;
+    padding: 1rem;
 
     @include container;
 

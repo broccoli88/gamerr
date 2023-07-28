@@ -97,6 +97,7 @@ const handleRateGameDesktopWindow = (e) => {
         !rateGameContainerRef.value &&
         !rateGameWrapperRef.value &&
         !isDesktopView.value &&
+        rateButtonRef &&
         rateButtonRef.value.contains(target)
     )
         return
@@ -160,7 +161,10 @@ onUnmounted(() => {
                     </div>
                 </section>
                 <section class="preview-tile__title-wrapper">
-                    <router-link to="/games" class="preview-tile__title">
+                    <router-link
+                        :to="{ name: 'games', params: { slug: props.game.slug } }"
+                        class="preview-tile__title"
+                    >
                         <p>{{ gameTitle }}</p>
                         <PreviewRating
                             :ratings="gameInfo.ratings"

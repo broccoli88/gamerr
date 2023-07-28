@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export const useGameDetailsStore = defineStore('gameDetailsStore', () => {
-    const gameBackground = ref()
+    const gameBackgroundImage = ref()
 
-    return { gameBackground }
+    return { gameBackgroundImage }
 })

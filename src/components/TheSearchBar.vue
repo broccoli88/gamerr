@@ -220,7 +220,7 @@ onUnmounted(() => {
         display: flex;
         align-items: center;
 
-        background-color: $color-gray-medium;
+        background-color: $color-gray-light-30;
         border-radius: 50px;
         overflow: hidden;
         padding: 0.2em 1rem;
@@ -254,8 +254,12 @@ onUnmounted(() => {
             outline: none;
             padding-block: 0.3em;
 
-            color: $color-gray-light-40;
+            color: $color-gray-light-50;
             font-size: 1.4rem;
+
+            &::placeholder {
+                color: $color-gray-light-60;
+            }
         }
 
         .navbar__search-btn {
@@ -263,13 +267,12 @@ onUnmounted(() => {
             background-color: transparent;
             display: flex;
             align-items: center;
-
-            .search-icon {
-                font-size: 2rem;
-                color: $color-gray-light-40;
-                margin-right: 0.5rem;
-                transition: color 0.3s ease-in;
-            }
+        }
+        .search-icon {
+            font-size: 2rem;
+            color: $color-gray-light-60;
+            margin-right: 0.5rem;
+            transition: color 0.3s ease-in;
         }
 
         .shortcuts {

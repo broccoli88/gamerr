@@ -13,13 +13,15 @@ const currentPlatformIcon = computed(() => {
 </script>
 
 <template>
-    <div>
-        <Icon class="platform-icon" :icon="currentPlatformIcon.icon" />
+    <div class="platform-icon">
+        <Icon :icon="currentPlatformIcon.icon" />
     </div>
 </template>
 
 <style lang="scss" scoped>
 .platform-icon {
     font-size: 1.6rem;
+    display: grid;
+    place-content: center;
 }
 </style>

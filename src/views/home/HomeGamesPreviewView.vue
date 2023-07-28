@@ -273,6 +273,7 @@ onUnmounted(() => {
 <style lang="scss" scoped>
 .games-wrapper {
     display: grid;
+    padding: 1rem;
 }
 .mobile-view {
     display: grid;
