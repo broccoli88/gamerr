@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import PreviewPlatformIcon from '../preview/PreviewPlatformIcon.vue'
+
 const props = defineProps(['game'])
 
 const formattedDate = ref(null)
@@ -96,8 +97,11 @@ console.log(props.game)
 }
 
 .game-header__info {
+    width: 100%;
     display: flex;
-    gap: 2rem;
+    gap: 1.7rem;
+    justify-content: center;
+    flex-wrap: wrap;
 
     .game-header__release {
         color: black;
@@ -109,6 +113,7 @@ console.log(props.game)
         display: flex;
         align-items: center;
         padding: 0rem 1rem;
+        white-space: nowrap;
     }
 
     .game-header__platforms {

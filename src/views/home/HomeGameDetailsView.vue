@@ -1,5 +1,7 @@
 <script async setup>
 import GameDetailsHeader from '../../components/game-details/GameDetailsHeader.vue'
+import GameDetailsFloatIconButton from '../../components/game-details/GameDetailsFloatIconButton.vue'
+import GameDetailsIconButton from '../../components/game-details/GameDetailsIconButton.vue'
 import { useFetchSingleGame } from '../../modules/useFetchSingleGame'
 import { useGameDetailsStore } from '../../stores/useGameDetailsStore'
 import { storeToRefs } from 'pinia'
@@ -25,6 +27,15 @@ await fetchSingleGame()
     <section class="game">
         <section class="game__content">
             <GameDetailsHeader :game="game" />
+            <GameDetailsFloatIconButton
+                class="details-btn details-btn--large details-btn--white details-btn--white-hover"
+            >
+                <template v-slot:top-text> Add to </template>
+                <template v-slot:bottom-text> My games </template>
+                <template v-slot:icon-right>
+                    <Icon class="details-btn__icon" icon="ic:sharp-add" />
+                </template>
+            </GameDetailsFloatIconButton>
         </section>
     </section>
 </template>
@@ -39,6 +50,7 @@ await fetchSingleGame()
     width: 100%;
     max-width: 48rem;
     margin-inline: auto;
+    padding-inline: 1rem;
 
     @include breakpoint {
         max-width: none;

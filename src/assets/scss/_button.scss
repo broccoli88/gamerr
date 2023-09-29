@@ -1,0 +1,79 @@
+@mixin details-btn {
+    border: none;
+    text-align: left;
+    font-family: $ff-text;
+    border-radius: 6px;
+    position: relative;
+    cursor: pointer;
+    isolation: isolate;
+    overflow: hidden;
+    transition: 0.2s all ease-in;
+}
+
+@mixin details-btn-top-txt {
+    color: $color-gray-light-60;
+    font-size: 1.2rem;
+}
+
+@mixin details-btn-bottom-txt($color: black) {
+    font-size: 1.7rem;
+    font-weight: 400;
+    color: $color;
+}
+
+// SIZES
+
+@mixin details-btn-large {
+    width: 100%;
+    padding: 1rem 2rem 0.5rem;
+}
+
+// TYPES
+
+@mixin details-btn-white {
+    background-color: white;
+}
+
+@mixin details-btn-outline-white {
+    background-color: transparent;
+    border: 1px solid white;
+}
+
+// HOVER EFFECTS
+
+@mixin details-btn-white-hover {
+    &:hover,
+    &:focus {
+        background-color: $color-gray-light-90;
+    }
+}
+
+@mixin details-btn-outline-white-hover {
+    &:hover,
+    &:focus {
+        border-color: $color-gray-light-50;
+    }
+}
+
+// Icon
+
+@mixin details-btn-icon-container($right: -0.8rem) {
+    width: min-content;
+    aspect-ratio: 1;
+    padding: 0.2rem;
+    border-radius: 50%;
+
+    display: grid;
+    place-content: center;
+
+    position: absolute;
+    top: 50%;
+    right: $right;
+    z-index: -1;
+
+    transform: translateY(-50%);
+}
+
+@mixin details-btn-icon-container-green {
+    background-image: linear-gradient(limegreen, rgb(25, 179, 25), green);
+}
